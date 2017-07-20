@@ -1,0 +1,28 @@
+{
+  "name": "katas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "mocha",
+    "watch": "mocha -w"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.1.0",
+    "mocha": "^3.4.2",
+    "standard": "^10.0.2"
+  },
+  "standard": {
+    "env": {
+      "mocha": true
+    },
+    "globals": [
+      "it", "describe"
+    ]
+  }
+}
