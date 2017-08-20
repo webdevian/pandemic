@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "nyc mocha",
     "watch": "mocha -w"
   },
   "author": "",
@@ -15,14 +15,22 @@
   "dependencies": {
     "chai": "^4.1.0",
     "mocha": "^3.4.2",
+    "nyc": "^11.1.0",
     "standard": "^10.0.2"
+  },
+  "nyc": {
+    "reporter": [
+      "html",
+      "text-summary"
+    ]
   },
   "standard": {
     "env": {
       "mocha": true
     },
     "globals": [
-      "it", "describe"
+      "it",
+      "describe"
     ]
   }
 }

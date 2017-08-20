@@ -1,7 +1,4 @@
-# Kata Starter Toolkit
-
-This is the barebones set up for practicing code katas in javascript with Mocha and Chai. It makes it quick and easy to start a new session without worrying about the scaffolding.
-
+# Pandemic board game simulation
 ## Requirements
 
 - NodeJS
@@ -10,11 +7,6 @@ This is the barebones set up for practicing code katas in javascript with Mocha 
 ## Getting started
 
 `npm install` or `yarn` - Install dependencies
-
-## File structure
-
-- `src/` Put code in here
-- `test/` Put tests in here
 
 ## Run tests
 
