@@ -32,9 +32,21 @@ describe('Game class', () => {
     expect(game.cities.pick('Atlanta').researchStation).to.equal(1)
   })
 
+  it('Can infect a city and the total cubes available is reduced', () => {
+    const game = new Game(4)
+    expect(game.diseases.red.cubes).to.equal(24)
+    game.infect('Bangkok')
+    expect(game.diseases.red.cubes).to.equal(23)
+    expect(game.cities.pick('Bangkok').infection.red).to.equal(1)
+    game.infect('Bangkok', 2, 'black')
+    expect(game.diseases.red.cubes).to.equal(23)
+    expect(game.diseases.black.cubes).to.equal(22)
+    expect(game.cities.pick('Bangkok').infection.black).to.equal(2)
+  })
+
   it('Creates a google map static image url displaying the state of the game', () => {
     const game = new Game(2)
-    game.cities.pick('Khartoum').infect(3)
+    game.infect('Khartoum', 3)
     expect(game.map).to.be.a('string')
     expect(game.map).contain('&markers=color:yellow|label:3|15.500654,32.559899&path=weight:1|15.500654,32.559899|-4.441931,15.266293&path=weight:1|15.500654,32.559899|6.524379,3.379206')
   })

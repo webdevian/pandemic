@@ -101,6 +101,18 @@ class Game {
   }
 
   /**
+   * Infect a city
+   * @param  {String} city       City to infect
+   * @param  {Number} [amount=1] Number of cubes
+   * @param  {String} disease    Which disease? Defaults to city's color
+   */
+  infect (city, amount = 1, disease) {
+    city = this.cities.pick(city)
+    const infection = city.infect(amount, disease)
+    this.diseases[infection.disease].cubes -= infection.amount
+  }
+
+  /**
    * Build a google maps static api for the status of the board
    * @member
    * @return {String} Url
