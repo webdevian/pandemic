@@ -80,4 +80,30 @@ describe('Deck Class', () => {
     })
     expect(epidemics).to.equal(6)
   })
+
+  it('Should find a card by name', () => {
+    const deck = new Deck('infection')
+    const start = deck.remaining
+    const card = deck.find('Bangkok')
+    expect(card.name).to.equal('Bangkok')
+    expect(deck.remaining).to.equal(start)
+  })
+
+  it('Should find and draw card by name', () => {
+    const deck = new Deck('infection')
+    const start = deck.remaining
+    const card = deck.find('Bangkok', 1)
+    expect(card.name).to.equal('Bangkok')
+    expect(deck.remaining).to.equal(start - 1)
+  })
+
+  it('Should be able to discard a card', () => {
+    const deck = new Deck('infection')
+    const card = deck.find('Bangkok')
+    const start = deck.remaining
+    expect(deck.discarded.length).to.equal(0)
+    card.discard()
+    expect(deck.discarded.length).to.equal(1)
+    expect(deck.remaining).to.equal(start - 1)
+  })
 })

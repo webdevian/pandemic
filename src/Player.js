@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * A player in the game
  * @class Player

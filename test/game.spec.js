@@ -8,7 +8,7 @@ describe('Game class', () => {
     const game = new Game(2)
     expect(game.infectionLevel).to.equal(0)
     expect(game.outbreakCount).to.equal(0)
-    expect(game.researchStations).to.equal(5)
+    expect(game.researchStations).to.equal(6)
     expect(game.diseases.red.cured).to.equal(0)
     expect(game.diseases.yellow.eradicated).to.equal(0)
     expect(game.players.length).to.equal(2)
@@ -19,6 +19,9 @@ describe('Game class', () => {
     expect(game.decks.infection.cards).to.be.an('array')
     expect(game.decks.infection.cards[0].type).to.equal('city')
     expect(game.cities).to.be.an('array')
+
+    game.start()
+    expect(game.researchStations).to.equal(5)
   })
 
   it('Can create a new game with 4 players', () => {
@@ -29,25 +32,35 @@ describe('Game class', () => {
 
   it('Research station is placed in Atlanta', () => {
     const game = new Game(4)
+    game.start()
     expect(game.cities.pick('Atlanta').researchStation).to.equal(1)
   })
 
   it('Can infect a city and the total cubes available is reduced', () => {
     const game = new Game(4)
-    expect(game.diseases.red.cubes).to.equal(24)
-    game.infect('Bangkok')
-    expect(game.diseases.red.cubes).to.equal(23)
+    const start = game.diseases.red.cubes
+    const blackStart = game.diseases.black.cubes
+    const card = game.decks.infection.find('Bangkok')
+    game.infect(card)
+    expect(game.diseases.red.cubes).to.equal(start - 1)
     expect(game.cities.pick('Bangkok').infection.red).to.equal(1)
-    game.infect('Bangkok', 2, 'black')
-    expect(game.diseases.red.cubes).to.equal(23)
-    expect(game.diseases.black.cubes).to.equal(22)
+    game.infect(card, 2, 'black')
+    expect(game.diseases.red.cubes).to.equal(start - 1)
+    expect(game.diseases.black.cubes).to.equal(blackStart - 2)
     expect(game.cities.pick('Bangkok').infection.black).to.equal(2)
   })
 
   it('Creates a google map static image url displaying the state of the game', () => {
     const game = new Game(2)
-    game.infect('Khartoum', 3)
+    const card = game.decks.infection.find('Khartoum')
+    game.infect(card, 3)
     expect(game.map).to.be.a('string')
     expect(game.map).contain('&markers=color:yellow|label:3|15.500654,32.559899&path=weight:1|15.500654,32.559899|-4.441931,15.266293&path=weight:1|15.500654,32.559899|6.524379,3.379206')
+  })
+
+  it('Infects 9 cities at the start of a game', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.diseases.red.cubes + game.diseases.yellow.cubes + game.diseases.black.cubes + game.diseases.blue.cubes).to.equal(96 - (9 + 6 + 3))
   })
 })

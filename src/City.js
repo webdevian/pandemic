@@ -1,3 +1,5 @@
+'use strict'
+
 const cities = require('../lib/cities')
 
 /**

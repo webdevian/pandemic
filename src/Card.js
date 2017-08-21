@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * A card
  * @class
@@ -15,6 +17,10 @@ class Card {
     Object.keys(data).map(key => {
       this[key] = data[key]
     })
+  }
+
+  discard () {
+    this.deck.discard(this)
   }
 }
 

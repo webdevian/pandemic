@@ -45,6 +45,16 @@ class Deck {
     })
 
     this.cards = cards
+    this.discarded = []
+  }
+
+  /**
+   * move a card from the deck to the discard pile
+   * @param  {Card} card Card instance
+   */
+  discard (card) {
+    const pickedCard = this.find(card.name, 1)
+    this.discarded.unshift(pickedCard)
   }
 
   /**
@@ -62,6 +72,7 @@ class Deck {
     })
 
     this.cards = cards
+    this.discarded = []
   }
 
   /**
@@ -96,6 +107,28 @@ class Deck {
 
       this.cards = newOrder
     }
+  }
+
+  /**
+   * Find a card by name and optionally draw it from the deck
+   * @param  {String} name          Name of the card
+   * @param  {Boolean} [draw=false] Take out of deck
+   * @return {Card}                 Card instance
+   */
+  find (name, draw = false) {
+    let index
+    this.cards.map((card, i) => {
+      if (card.name === name) {
+        index = i
+      }
+    })
+    const card = this.cards[index]
+
+    if (draw) {
+      this.cards.splice(index, 1)
+    }
+
+    return card
   }
 
   /**

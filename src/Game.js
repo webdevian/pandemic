@@ -1,3 +1,5 @@
+'use strict'
+
 const Deck = require('./Deck')
 const Player = require('./Player')
 const City = require('./City')
@@ -19,12 +21,6 @@ class Game {
     this.createPlayers(players)
     this.pickRoles()
     this.dealCards()
-
-    // Infect cities
-    // Decide first turn
-    this.buildResearchStation('Atlanta')
-    // Place players in Atlanta
-    // Prompt first turn
   }
 
   /**
@@ -52,6 +48,17 @@ class Game {
     }
 
     this.cities = City.load()
+  }
+
+  /**
+   * Start the game
+   */
+  start () {
+    this.initialInfect()
+    // Decide first turn
+    this.buildResearchStation('Atlanta')
+    // Place players in Atlanta
+    // Prompt first turn
   }
 
   /**
@@ -83,16 +90,13 @@ class Game {
   }
 
   /**
-   * Build a research station in a given city
-   * @param  {String} city City Name
-   * @return {Boolean}     Was it built?
+   * Can a research station be build in this city
+   * @param  {City} city City instance
+   * @return {Boolean}
    */
-  buildResearchStation (city) {
+  canBuildResearchStation (city) {
     if (this.researchStations > 0) {
-      city = this.cities.pick(city)
       if (!city.researchStation) {
-        city.researchStation = 1
-        this.researchStations--
         return true
       }
     }
@@ -101,15 +105,42 @@ class Game {
   }
 
   /**
+   * Build a research station in a given city
+   * @param  {String} city City Name
+   * @return {Boolean}     Was it built?
+   */
+  buildResearchStation (city) {
+    city = this.cities.pick(city)
+    if (!this.canBuildResearchStation(city)) {
+      return false
+    }
+
+    city.researchStation = 1
+    this.researchStations--
+    return true
+  }
+
+  /**
    * Infect a city
-   * @param  {String} city       City to infect
+   * @param  {Card} card         Infection Card
    * @param  {Number} [amount=1] Number of cubes
    * @param  {String} disease    Which disease? Defaults to city's color
    */
-  infect (city, amount = 1, disease) {
-    city = this.cities.pick(city)
+  infect (card, amount = 1, disease) {
+    const city = this.cities.pick(card.city.name)
     const infection = city.infect(amount, disease)
     this.diseases[infection.disease].cubes -= infection.amount
+    card.discard()
+  }
+
+  /**
+   * Infect 9 cities at the start of the game
+   */
+  initialInfect () {
+    for (let i = 0; i < 9; i++) {
+      const card = this.decks.infection.cards[0]
+      this.infect(card, Math.floor(i / 3) + 1)
+    }
   }
 
   /**
