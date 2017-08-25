@@ -78,4 +78,41 @@ describe('Turn actions', () => {
     expect(game.turn.player.position).to.equal('Khartoum')
     expect(game.turn.actions).to.equal(3)
   })
+
+  it('Allow player to build a reaserch station in current city', () => {
+    const game = new Game(2)
+    game.start()
+    let city
+    game.turn.player.cards.some((card, index) => {
+      if (card.type === 'city') {
+        city = card.name
+        return true
+      }
+    })
+    game.turn.player.position = city
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.buildResearchStation).to.be.an('array')
+    expect(game.turn.availableActions.buildResearchStation.length).to.equal(1)
+    game.turn.availableActions.buildResearchStation[0].do()
+    expect(game.turn.currentPosition.researchStation).to.equal(1)
+    expect(game.researchStations).to.equal(4)
+    expect(game.turn.actions).to.equal(3)
+  })
+
+  it('Don\'t allow player to build a reaserch station in current city if one already exists', () => {
+    const game = new Game(2)
+    game.start()
+    let city
+    game.turn.player.cards.some((card, index) => {
+      if (card.type === 'city') {
+        city = card.name
+        return true
+      }
+    })
+    game.turn.player.position = city
+    game.turn.getAvailableActions()
+    game.turn.currentPosition.researchStation = 1
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.buildResearchStation.length).to.equal(0)
+  })
 })

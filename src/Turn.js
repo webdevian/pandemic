@@ -37,7 +37,8 @@ class Turn {
       drive: this.getDriveOptions(),
       directFlight: this.getDirectFlightOptions(),
       charterFlight: this.getCharterFlightOptions(),
-      shuttleFlight: this.getShuttleFlightOptions()
+      shuttleFlight: this.getShuttleFlightOptions(),
+      buildResearchStation: this.buildResearchStationOptions()
     }
   }
 
@@ -124,6 +125,26 @@ class Turn {
   }
 
   /**
+   * Get option for building research station
+   * @return {Array.Object}
+   */
+  buildResearchStationOptions () {
+    let options = []
+    this.player.cards.map(card => {
+      if (this.isInCity(card) && !this.currentPosition.researchStation) {
+        options.push({
+          label: 'Build Research Station in ' + card.name,
+          do: () => {
+            return this.doAction('buildResearchStation', card)
+          }
+        })
+      }
+    })
+
+    return options
+  }
+
+  /**
    * Perform an action
    * @param  {String} action Action name
    * @param  {Object} payload   Data to pass to the action function
@@ -174,6 +195,15 @@ class Turn {
    */
   shuttleFlight (city) {
     this.game.move(this.player, city.name)
+  }
+
+  /**
+   * Build research station in current city
+   * @param  {Card} card
+   */
+  buildResearchStation (card) {
+    this.game.buildResearchStation(card.name)
+    card.discard()
   }
 
   /**
