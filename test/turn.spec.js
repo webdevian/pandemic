@@ -115,4 +115,37 @@ describe('Turn actions', () => {
     game.turn.getAvailableActions()
     expect(game.turn.availableActions.buildResearchStation.length).to.equal(0)
   })
+
+  it('Allow player to remove 1 disease cube in current city', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.currentPosition.infection.blue = 0
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.treat).to.be.an('array')
+    expect(game.turn.availableActions.treat.length).to.equal(0)
+    game.turn.currentPosition.infection.blue = 1
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.treat.length).to.equal(1)
+    expect(game.turn.availableActions.treat[0].label).to.equal('Remove 1 blue disease cube')
+    game.turn.availableActions.treat[0].do()
+    expect(game.turn.actions).to.equal(3)
+    expect(game.turn.currentPosition.infection.blue).to.equal(0)
+  })
+
+  it('Allow player to clear cured disease cubes in current city', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.currentPosition.infection.blue = 0
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.treat).to.be.an('array')
+    expect(game.turn.availableActions.treat.length).to.equal(0)
+    game.turn.currentPosition.infection.blue = 3
+    game.diseases.blue.cured = true
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.treat.length).to.equal(1)
+    expect(game.turn.availableActions.treat[0].label).to.equal('Remove 3 blue disease cube')
+    game.turn.availableActions.treat[0].do()
+    expect(game.turn.actions).to.equal(3)
+    expect(game.turn.currentPosition.infection.blue).to.equal(0)
+  })
 })

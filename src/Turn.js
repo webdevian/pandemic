@@ -6,7 +6,6 @@
  */
 class Turn {
   /**
-   * [constructor description]
    * @param  {Game} game    The game instance
    * @param  {Player} player A player instance
    */
@@ -38,7 +37,8 @@ class Turn {
       directFlight: this.getDirectFlightOptions(),
       charterFlight: this.getCharterFlightOptions(),
       shuttleFlight: this.getShuttleFlightOptions(),
-      buildResearchStation: this.buildResearchStationOptions()
+      buildResearchStation: this.getBuildResearchStationOptions(),
+      treat: this.getTreatOptions()
     }
   }
 
@@ -128,7 +128,7 @@ class Turn {
    * Get option for building research station
    * @return {Array.Object}
    */
-  buildResearchStationOptions () {
+  getBuildResearchStationOptions () {
     let options = []
     this.player.cards.map(card => {
       if (this.isInCity(card) && !this.currentPosition.researchStation) {
@@ -136,6 +136,28 @@ class Turn {
           label: 'Build Research Station in ' + card.name,
           do: () => {
             return this.doAction('buildResearchStation', card)
+          }
+        })
+      }
+    })
+
+    return options
+  }
+
+  /**
+   * Get options for treating diseases in current city
+   * @return {Array.Object}
+   */
+  getTreatOptions () {
+    const options = []
+
+    Object.keys(this.currentPosition.infection).map(disease => {
+      if (this.currentPosition.infection[disease]) {
+        const cureAmount = this.game.diseases[disease].cured ? this.currentPosition.infection[disease] : 1
+        options.push({
+          label: 'Remove ' + cureAmount + ' ' + disease + ' disease cube',
+          do: () => {
+            this.doAction('treat', {disease, cureAmount})
           }
         })
       }
@@ -204,6 +226,15 @@ class Turn {
   buildResearchStation (card) {
     this.game.buildResearchStation(card.name)
     card.discard()
+  }
+
+  /**
+   * Treat a disease in a current city
+   * @param  {String} disease  disease name
+   * @param  {Number} cureAmount How many cubes to remove
+   */
+  treat ({disease, cureAmount}) {
+    this.currentPosition.infection[disease] -= cureAmount
   }
 
   /**
