@@ -81,27 +81,6 @@ describe('Game class', () => {
     expect(game.diseases.red.cubes + game.diseases.yellow.cubes + game.diseases.black.cubes + game.diseases.blue.cubes).to.equal(96 - (9 + 6 + 3))
   })
 
-  it('Gives options on the first turn', () => {
-    const game = new Game(2)
-    game.start()
-    expect(game.turn).to.be.an('object')
-    expect(game.turn.constructor.name).to.equal('Turn')
-    expect(game.turn.actions).to.equal(4)
-    expect(game.turn.availableActions).to.be.an('object')
-    expect(game.turn.availableActions.drive).to.be.an('array')
-    expect(game.turn.availableActions.drive.length).to.equal(3)
-  })
-
-  it('Allow player to drive to adjacent city', () => {
-    const game = new Game(2)
-    game.start()
-    expect(game.turn.availableActions.drive[0].label).to.equal('Drive to Chicago')
-    game.turn.availableActions.drive[0].do()
-    expect(game.players[0].position).to.equal('Chicago')
-    expect(game.turn.actions).to.equal(3)
-    expect(game.turn.availableActions.drive.length).to.equal(5)
-  })
-
   it('Manually Move onto next player', () => {
     const game = new Game(2)
     game.start()

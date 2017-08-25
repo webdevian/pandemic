@@ -15,7 +15,15 @@ class Turn {
     this.player = player
     this.actions = 4
 
-    this.availableActions = this.getAvailableActions()
+    this.getAvailableActions()
+  }
+
+  isInCity (card) {
+    return card.type === 'city' && card.name === this.currentPosition.name
+  }
+
+  notInCity (card) {
+    return card.type === 'city' && card.name !== this.currentPosition.name
   }
 
   /**
@@ -25,14 +33,17 @@ class Turn {
    */
   getAvailableActions () {
     this.currentPosition = this.game.cities.pick(this.player.position)
-    return {
-      drive: this.getDriveOptions()
+    this.availableActions = {
+      drive: this.getDriveOptions(),
+      directFlight: this.getDirectFlightOptions(),
+      charterFlight: this.getCharterFlightOptions(),
+      shuttleFlight: this.getShuttleFlightOptions()
     }
   }
 
   /**
    * Get options for the drive action based on adjacent cities
-   * @return {Array}
+   * @return {Array.Object}
    */
   getDriveOptions () {
     const options = []
@@ -41,7 +52,7 @@ class Turn {
       options.push({
         label: 'Drive to ' + city,
         do: () => {
-          return this.doAction('drive', { city })
+          return this.doAction('drive', city)
         }
       })
     })
@@ -50,29 +61,119 @@ class Turn {
   }
 
   /**
+   * Get options for flying direct
+   * @return {Array.Object}
+   */
+  getDirectFlightOptions () {
+    const options = []
+
+    this.player.cards.map(card => {
+      if (this.notInCity(card)) {
+        options.push({
+          label: 'Fly to ' + card.city,
+          do: () => {
+            return this.doAction('directFlight', card)
+          }
+        })
+      }
+    })
+
+    return options
+  }
+
+  /**
+   * Get options for chartering flight to anywhere
+   * @return {Array.Object}
+   */
+  getCharterFlightOptions () {
+    const options = []
+    this.player.cards.map(card => {
+      if (this.isInCity(card)) {
+        this.game.cities.map(city => {
+          options.push({
+            label: 'Charter flight to ' + city,
+            do: () => {
+              return this.doAction('charterFlight', {card, city})
+            }
+          })
+        })
+      }
+    })
+
+    return options
+  }
+
+  /**
+   * Options for travelling to another research station
+   * @return {Array.Object}
+   */
+  getShuttleFlightOptions () {
+    const options = []
+    if (this.currentPosition.researchStation) {
+      this.game.cities.filter(city => city.researchStation && this.currentPosition.name !== city.name).map(city => {
+        options.push({
+          label: 'Shuttle flight to ' + city.name,
+          do: () => {
+            return this.doAction('shuttleFlight', city)
+          }
+        })
+      })
+    }
+
+    return options
+  }
+
+  /**
    * Perform an action
    * @param  {String} action Action name
-   * @param  {Object} body   Data to pass to the action function
+   * @param  {Object} payload   Data to pass to the action function
    */
-  doAction (action, body) {
+  doAction (action, payload) {
     this.actions--
 
-    this[action](body)
+    this[action](payload)
 
     if (!this.actions) {
       // Do draw and infect stage first
       return this.end()
     }
 
-    this.availableActions = this.getAvailableActions()
+    this.getAvailableActions()
   }
 
   /**
    * Drive action
    * @param  {String} city City to drive to
    */
-  drive ({city}) {
+  drive (city) {
     this.game.move(this.player, city)
+  }
+
+  /**
+   * Fly to a specific city and discard the card
+   * @param  {Card} card
+   */
+  directFlight (card) {
+    this.game.move(this.player, card.name)
+    card.discard()
+  }
+
+  /**
+   * Fly to any city by discarding the card of the current city
+   * @param  {Card} card
+   * @param  {City} city
+   */
+  charterFlight ({card, city}) {
+    this.game.move(this.player, city.name)
+    card.discard()
+  }
+
+  /**
+   * Move between research stations
+   * @param  {City} city
+   */
+  shuttleFlight (city) {
+    this.game.move(this.player, city.name)
   }
 
   /**
