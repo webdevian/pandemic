@@ -34,6 +34,23 @@ describe('Game class', () => {
     const game = new Game(4)
     game.start()
     expect(game.cities.pick('Atlanta').researchStation).to.equal(1)
+    expect(game.map).to.be.a('string')
+    expect(game.map).to.contain('&markers=icon:http%3A%2F%2Fi.imgur.com%2FB5DUeSF.png|33.748995,-84.387982')
+  })
+
+  it('Cannot build a research station if one already exists', () => {
+    const game = new Game(4)
+    game.start()
+    expect(game.cities.pick('Atlanta').researchStation).to.equal(1)
+    expect(game.buildResearchStation('Atlanta')).to.equal(false)
+  })
+
+  it('Cannot build a research station if there are none left', () => {
+    const game = new Game(4)
+    game.start()
+    expect(game.cities.pick('Atlanta').researchStation).to.equal(1)
+    game.researchStations = 0
+    expect(game.buildResearchStation('Atlanta')).to.equal(false)
   })
 
   it('Can infect a city and the total cubes available is reduced', () => {
@@ -62,5 +79,47 @@ describe('Game class', () => {
     const game = new Game(2)
     game.start()
     expect(game.diseases.red.cubes + game.diseases.yellow.cubes + game.diseases.black.cubes + game.diseases.blue.cubes).to.equal(96 - (9 + 6 + 3))
+  })
+
+  it('Gives options on the first turn', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn).to.be.an('object')
+    expect(game.turn.constructor.name).to.equal('Turn')
+    expect(game.turn.actions).to.equal(4)
+    expect(game.turn.availableActions).to.be.an('object')
+    expect(game.turn.availableActions.drive).to.be.an('array')
+    expect(game.turn.availableActions.drive.length).to.equal(3)
+  })
+
+  it('Allow player to drive to adjacent city', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn.availableActions.drive[0].label).to.equal('Drive to Chicago')
+    game.turn.availableActions.drive[0].do()
+    expect(game.players[0].position).to.equal('Chicago')
+    expect(game.turn.actions).to.equal(3)
+    expect(game.turn.availableActions.drive.length).to.equal(5)
+  })
+
+  it('Manually Move onto next player', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn.player.name).to.equal('player1')
+    game.newTurn()
+    expect(game.turn.player.name).to.equal('player2')
+    game.newTurn()
+    expect(game.turn.player.name).to.equal('player1')
+  })
+
+  it('Move onto next player after 4 actions', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn.player.name).to.equal('player1')
+    game.turn.availableActions.drive[0].do()
+    game.turn.availableActions.drive[0].do()
+    game.turn.availableActions.drive[0].do()
+    game.turn.availableActions.drive[0].do()
+    expect(game.turn.player.name).to.equal('player2')
   })
 })

@@ -3,6 +3,7 @@
 const Deck = require('./Deck')
 const Player = require('./Player')
 const City = require('./City')
+const Turn = require('./Turn')
 
 /**
  * Top level class. Start a new game from here
@@ -31,6 +32,7 @@ class Game {
     this.outbreakCount = 0
     this.researchStations = 6
     this.diseases = {}
+    this.turns = []
 
     const colors = ['red', 'yellow', 'black', 'blue']
 
@@ -55,10 +57,36 @@ class Game {
    */
   start () {
     this.initialInfect()
-    // Decide first turn
     this.buildResearchStation('Atlanta')
-    // Place players in Atlanta
-    // Prompt first turn
+    this.players.map(player => {
+      this.move(player, 'Atlanta')
+    })
+    this.newTurn()
+  }
+
+  /**
+   * Start a new turn
+   */
+  newTurn () {
+    let player
+
+    if (!this.turn) {
+      // Decide first turn
+      player = this.players[0]
+    } else {
+      const current = this.players.indexOf(this.turn.player)
+      player = current >= 0 && current < this.players.length - 1 ? this.players[current + 1] : this.players[0]
+    }
+
+    this.turns.push(new Turn(this, player))
+  }
+
+  /**
+   * Getter for the current turn
+   * @return {Turn} Turn instance
+   */
+  get turn () {
+    return this.turns[this.turns.length - 1]
   }
 
   /**
@@ -87,6 +115,15 @@ class Game {
    */
   dealCards () {
     this.decks.player.deal(this.players)
+  }
+
+  /**
+   * Move a player
+   * @param  {Player} player Player instance
+   * @param  {String} city   City Name
+   */
+  move (player, city) {
+    player.position = city
   }
 
   /**

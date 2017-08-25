@@ -81,32 +81,30 @@ class Deck {
    * @param  {String} difficulty    Difficulty level of the game
    */
   deal (players, difficulty = 'easy') {
-    if (this.type === 'player') {
-      this.shuffle()
+    this.shuffle()
 
-      const cardsToDeal = Deck.cardsPerPlayer[players.length]
+    const cardsToDeal = Deck.cardsPerPlayer[players.length]
 
-      Array.from(Array(cardsToDeal)).map(() => {
-        players.map(player => {
-          player.cards.push(this.draw())
-        })
+    Array.from(Array(cardsToDeal)).map(() => {
+      players.map(player => {
+        player.cards.push(this.draw())
       })
+    })
 
-      const amountOfEpidemics = Deck.difficultyEpidemics[difficulty]
+    const amountOfEpidemics = Deck.difficultyEpidemics[difficulty]
 
-      const groups = this.split(this.cards, amountOfEpidemics)
-      const newOrder = []
+    const groups = this.split(this.cards, amountOfEpidemics)
+    const newOrder = []
 
-      groups.map(group => {
-        group.push(new Card('epidemic', this))
-        this.randomiseArray(group)
-        group.map(card => {
-          newOrder.push(card)
-        })
+    groups.map(group => {
+      group.push(new Card('epidemic', this))
+      this.randomiseArray(group)
+      group.map(card => {
+        newOrder.push(card)
       })
+    })
 
-      this.cards = newOrder
-    }
+    this.cards = newOrder
   }
 
   /**
