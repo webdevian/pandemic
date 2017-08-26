@@ -148,4 +148,61 @@ describe('Turn actions', () => {
     expect(game.turn.actions).to.equal(3)
     expect(game.turn.currentPosition.infection.blue).to.equal(0)
   })
+
+  it('Allow players to share a card when both in that city', () => {
+    let game = new Game(2)
+    game.start()
+    let city
+
+    game.turn.player.cards.some((card, index) => {
+      if (card.type === 'city') {
+        city = card.name
+        return true
+      }
+    })
+
+    game.players[0].position = city
+    game.players[1].position = city
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.shareKnowledge).to.be.an('array')
+    expect(game.turn.availableActions.shareKnowledge.length).to.equal(1)
+    expect(game.turn.availableActions.shareKnowledge[0].label).to.equal('Give ' + city + ' card to player2')
+
+    game.turn.end()
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.shareKnowledge).to.be.an('array')
+    expect(game.turn.availableActions.shareKnowledge.length).to.equal(1)
+    expect(game.turn.availableActions.shareKnowledge[0].label).to.equal('Take ' + city + ' card from player1')
+
+    game.turn.availableActions.drive[0].do()
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.shareKnowledge.length).to.equal(0)
+
+    game = new Game(2)
+    game.start()
+
+    game.turn.player.cards.some((card, index) => {
+      if (card.type === 'city') {
+        city = card.name
+        return true
+      }
+    })
+
+    game.players[0].position = city
+    game.players[1].position = city
+    game.turn.getAvailableActions()
+    expect(game.turn.availableActions.shareKnowledge).to.be.an('array')
+    expect(game.turn.availableActions.shareKnowledge.length).to.equal(1)
+
+    game.turn.availableActions.shareKnowledge[0].do()
+    expect(game.turn.actions).to.equal(3)
+
+    expect(game.players[0].cards.length).to.equal(3)
+    expect(game.players[1].cards.length).to.equal(5)
+
+    game.turn.availableActions.shareKnowledge[0].do()
+
+    expect(game.players[0].cards.length).to.equal(4)
+    expect(game.players[1].cards.length).to.equal(4)
+  })
 })

@@ -17,10 +17,20 @@ class Turn {
     this.getAvailableActions()
   }
 
+  /**
+   * Is the player in the city of a given card
+   * @param  {Card}  card
+   * @return {Boolean}
+   */
   isInCity (card) {
     return card.type === 'city' && card.name === this.currentPosition.name
   }
 
+  /**
+   * Is the player not in the city of a given given city card
+   * @param  {Card}  card
+   * @return {Boolean}
+   */
   notInCity (card) {
     return card.type === 'city' && card.name !== this.currentPosition.name
   }
@@ -38,8 +48,34 @@ class Turn {
       charterFlight: this.getCharterFlightOptions(),
       shuttleFlight: this.getShuttleFlightOptions(),
       buildResearchStation: this.getBuildResearchStationOptions(),
-      treat: this.getTreatOptions()
+      treat: this.getTreatOptions(),
+      shareKnowledge: this.getShareKnowledgeOptions()
     }
+  }
+
+  /**
+   * Perform an action
+   * @param  {String} action Action name
+   * @param  {Object} payload   Data to pass to the action function
+   */
+  doAction (action, payload) {
+    this.actions--
+
+    this[action](payload)
+
+    if (!this.actions) {
+      // Do draw and infect stage first
+      return this.end()
+    }
+
+    this.getAvailableActions()
+  }
+
+  /**
+   * Start a new game turn
+   */
+  end () {
+    this.game.newTurn()
   }
 
   /**
@@ -62,6 +98,14 @@ class Turn {
   }
 
   /**
+   * Drive action
+   * @param  {String} city City to drive to
+   */
+  drive (city) {
+    this.game.move(this.player, city)
+  }
+
+  /**
    * Get options for flying direct
    * @return {Array.Object}
    */
@@ -71,7 +115,7 @@ class Turn {
     this.player.cards.map(card => {
       if (this.notInCity(card)) {
         options.push({
-          label: 'Fly to ' + card.city,
+          label: 'Fly to ' + card.city.name,
           do: () => {
             return this.doAction('directFlight', card)
           }
@@ -80,6 +124,15 @@ class Turn {
     })
 
     return options
+  }
+
+  /**
+   * Fly to a specific city and discard the card
+   * @param  {Card} card
+   */
+  directFlight (card) {
+    this.game.move(this.player, card.name)
+    card.discard()
   }
 
   /**
@@ -105,6 +158,16 @@ class Turn {
   }
 
   /**
+   * Fly to any city by discarding the card of the current city
+   * @param  {Card} card
+   * @param  {City} city
+   */
+  charterFlight ({card, city}) {
+    this.game.move(this.player, city.name)
+    card.discard()
+  }
+
+  /**
    * Options for travelling to another research station
    * @return {Array.Object}
    */
@@ -125,6 +188,14 @@ class Turn {
   }
 
   /**
+   * Move between research stations
+   * @param  {City} city
+   */
+  shuttleFlight (city) {
+    this.game.move(this.player, city.name)
+  }
+
+  /**
    * Get option for building research station
    * @return {Array.Object}
    */
@@ -142,6 +213,15 @@ class Turn {
     })
 
     return options
+  }
+
+  /**
+   * Build research station in current city
+   * @param  {Card} card
+   */
+  buildResearchStation (card) {
+    this.game.buildResearchStation(card.name)
+    card.discard()
   }
 
   /**
@@ -167,68 +247,6 @@ class Turn {
   }
 
   /**
-   * Perform an action
-   * @param  {String} action Action name
-   * @param  {Object} payload   Data to pass to the action function
-   */
-  doAction (action, payload) {
-    this.actions--
-
-    this[action](payload)
-
-    if (!this.actions) {
-      // Do draw and infect stage first
-      return this.end()
-    }
-
-    this.getAvailableActions()
-  }
-
-  /**
-   * Drive action
-   * @param  {String} city City to drive to
-   */
-  drive (city) {
-    this.game.move(this.player, city)
-  }
-
-  /**
-   * Fly to a specific city and discard the card
-   * @param  {Card} card
-   */
-  directFlight (card) {
-    this.game.move(this.player, card.name)
-    card.discard()
-  }
-
-  /**
-   * Fly to any city by discarding the card of the current city
-   * @param  {Card} card
-   * @param  {City} city
-   */
-  charterFlight ({card, city}) {
-    this.game.move(this.player, city.name)
-    card.discard()
-  }
-
-  /**
-   * Move between research stations
-   * @param  {City} city
-   */
-  shuttleFlight (city) {
-    this.game.move(this.player, city.name)
-  }
-
-  /**
-   * Build research station in current city
-   * @param  {Card} card
-   */
-  buildResearchStation (card) {
-    this.game.buildResearchStation(card.name)
-    card.discard()
-  }
-
-  /**
    * Treat a disease in a current city
    * @param  {String} disease  disease name
    * @param  {Number} cureAmount How many cubes to remove
@@ -238,10 +256,50 @@ class Turn {
   }
 
   /**
-   * Start a new game turn
+   * Get options for sharing cards with other players
+   * @return {Array.Object}
    */
-  end () {
-    this.game.newTurn()
+  getShareKnowledgeOptions () {
+    const options = []
+
+    this.game.players.map(player => {
+      if (player.position === this.currentPosition.name && player !== this.player) {
+        if (player.cards.filter(card => card.name === this.currentPosition.name).length) {
+          options.push({
+            label: 'Take ' + this.currentPosition.name + ' card from ' + player.name,
+            do: () => {
+              return this.doAction('shareKnowledge', {card: player.cards.filter(card => card.name === this.currentPosition.name)[0], from: player, to: this.player})
+            }
+          })
+        }
+
+        if (this.player.cards.filter(card => card.name === this.currentPosition.name).length) {
+          options.push({
+            label: 'Give ' + this.currentPosition.name + ' card to ' + player.name,
+            do: () => {
+              return this.doAction('shareKnowledge', {card: this.player.cards.filter(card => card.name === this.currentPosition.name)[0], from: this.player, to: player})
+            }
+          })
+        }
+      }
+    })
+
+    return options
+  }
+
+  /**
+   * Give or take a card to/from another player
+   * @param  {Card} card    The card to share
+   * @param  {Player} from  Player giving the card
+   * @param  {Player} to    Player receiving the card
+   */
+  shareKnowledge ({card, from, to}) {
+    from.cards.map((cardInHand, index) => {
+      if (card.name === cardInHand.name) {
+        to.cards.unshift(cardInHand)
+        from.cards.splice(index, 1)
+      }
+    })
   }
 }
 
