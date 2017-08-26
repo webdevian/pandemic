@@ -125,9 +125,11 @@ describe('Turn actions', () => {
     expect(game.turn.availableActions.treat.length).to.equal(0)
     game.turn.currentPosition.infection.blue = 1
     game.turn.getAvailableActions()
+    const totalBlue = game.diseases.blue.cubes
     expect(game.turn.availableActions.treat.length).to.equal(1)
     expect(game.turn.availableActions.treat[0].label).to.equal('Remove 1 blue disease cube')
     game.turn.availableActions.treat[0].do()
+    expect(game.diseases.blue.cubes).to.equal(totalBlue + 1)
     expect(game.turn.actions).to.equal(3)
     expect(game.turn.currentPosition.infection.blue).to.equal(0)
   })
@@ -142,9 +144,11 @@ describe('Turn actions', () => {
     game.turn.currentPosition.infection.blue = 3
     game.diseases.blue.cured = true
     game.turn.getAvailableActions()
+    const totalBlue = game.diseases.blue.cubes
     expect(game.turn.availableActions.treat.length).to.equal(1)
     expect(game.turn.availableActions.treat[0].label).to.equal('Remove 3 blue disease cube')
     game.turn.availableActions.treat[0].do()
+    expect(game.diseases.blue.cubes).to.equal(totalBlue + 3)
     expect(game.turn.actions).to.equal(3)
     expect(game.turn.currentPosition.infection.blue).to.equal(0)
   })

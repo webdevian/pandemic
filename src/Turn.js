@@ -253,6 +253,7 @@ class Turn {
    */
   treat ({disease, cureAmount}) {
     this.currentPosition.infection[disease] -= cureAmount
+    this.game.diseases[disease].cubes += cureAmount
   }
 
   /**
@@ -298,6 +299,8 @@ class Turn {
       if (card.name === cardInHand.name) {
         to.cards.unshift(cardInHand)
         from.cards.splice(index, 1)
+
+        // TODO Check for 7 or more cards and prompt discard
       }
     })
   }
