@@ -204,6 +204,9 @@ class Deck {
    * @return {Card} Chosen card
    */
   draw () {
+    if (this.type === 'player' && this.cards.length < 2) {
+      throw new Error('Game Over')
+    }
     const card = this.cards[0]
     this.cards.splice(0, 1)
     return card

@@ -116,4 +116,19 @@ describe('Game class', () => {
     game.turn.player.cards[0].discard()
     expect(game.turn.player.cards.length).to.equal(3)
   })
+
+  it('Game ends when there are no player cards left', () => {
+    const game = new Game(2)
+    game.start()
+    for (let i = 0; i < 48; i++) {
+      game.decks.player.draw()
+    }
+
+    try {
+      game.decks.player.draw()
+      expect(0).to.equal(1)
+    } catch (e) {
+      expect(e.message).to.equal('Game Over')
+    }
+  })
 })
