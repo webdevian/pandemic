@@ -100,8 +100,8 @@ describe('Game class', () => {
     game.turn.availableActions.drive[0].do()
 
     // Put safe cards at top of deck
-    game.players[1].cards.unshift(game.turn.player.cards[0])
-    game.players[1].cards.unshift(game.turn.player.cards[1])
+    game.decks.player.cards.unshift(game.players[1].cards[0])
+    game.decks.player.cards.unshift(game.players[1].cards[1])
     game.turn.availableActions.drive[0].do()
     expect(game.players[0].cards.length).to.equal(6)
 

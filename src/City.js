@@ -29,18 +29,46 @@ class City {
   /**
    * Infect a city
    * @param  {Game}
-   * @param  {Number} [amount=1] How many infection cubes to add
-   * @param  {String} disease    Which disease? Defaults to city's color
-   * @return {Object}            Amount and disease, so game can deduct cubes from total
+   * @param  {Number} [amount=1]        How many infection cubes to add
+   * @param  {String} disease           Which disease? Defaults to city's color
+   * @param  {Array.String} [outbreakSources]  City outbreak started in
+   * @return {Object}                   Amount and disease, so game can deduct cubes from total
    */
-  infect (game, amount = 1, disease) {
+  infect (game, amount = 1, disease, outbreakSources) {
     if (!disease) {
       disease = this.color
+    }
+
+    if (this.infection[disease] + amount > 3) {
+      this.infection[disease] = 3
+      return this.outbreak(game, disease, outbreakSources)
     }
 
     // Do outbreak here
     this.infection[disease] += amount
     game.diseases[disease].cubes -= amount
+  }
+
+  /**
+   * Outbreak a disease to neighbouring cities
+   * @param  {Game}
+   * @param  {String} disease                   Which disease? Defaults to city's color
+   * @param  {Array.String} [outbreakSources=[]] City outbreak started in
+   */
+  outbreak (game, disease, outbreakSources = []) {
+    if (outbreakSources.indexOf(this.name) > -1) {
+      return false
+    }
+
+    game.outbreakCount++
+    if (game.outbreakCount > 7) {
+      throw Error('Game Over')
+    }
+
+    Object.keys(this.adjacent).map(city => {
+      outbreakSources.push(this.name)
+      this.adjacent[city].infect(game, 1, disease, outbreakSources)
+    })
   }
 
   /**

@@ -71,4 +71,59 @@ describe('City class', () => {
       })
     })
   })
+
+  it('Outbreak spreads infection to neighbouring cities', () => {
+    const game = new Game(2)
+    const card = game.decks.infection.find('Khartoum')
+    game.infect(card, 3)
+
+    expect(game.outbreakCount).to.equal(0)
+    expect(game.cities.pick('Khartoum').infection.yellow).to.equal(3)
+
+    game.infect(card, 1)
+    expect(game.cities.pick('Khartoum').infection.yellow).to.equal(3)
+    expect(game.cities.pick('Cairo').infection.yellow).to.equal(1)
+    expect(game.cities.pick('Johannesburg').infection.yellow).to.equal(1)
+    expect(game.cities.pick('Lagos').infection.yellow).to.equal(1)
+    expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(1)
+
+    expect(game.outbreakCount).to.equal(1)
+  })
+
+  it('Chain Outbreak spreads infection to neighbouring cities', () => {
+    const game = new Game(2)
+    const Khartoum = game.decks.infection.find('Khartoum')
+    const Johannesburg = game.decks.infection.find('Johannesburg')
+    game.infect(Khartoum, 3)
+    game.infect(Johannesburg, 3)
+
+    expect(game.outbreakCount).to.equal(0)
+    expect(game.cities.pick('Khartoum').infection.yellow).to.equal(3)
+
+    game.infect(Khartoum, 1)
+    expect(game.cities.pick('Khartoum').infection.yellow).to.equal(3)
+    expect(game.cities.pick('Cairo').infection.yellow).to.equal(1)
+    expect(game.cities.pick('Johannesburg').infection.yellow).to.equal(3)
+    expect(game.cities.pick('Lagos').infection.yellow).to.equal(1)
+    expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(2)
+
+    expect(game.outbreakCount).to.equal(2)
+  })
+
+  it('Chain Outbreak spreads infection to neighbouring cities', () => {
+    const game = new Game(2)
+    const Khartoum = game.decks.infection.find('Khartoum')
+    const Johannesburg = game.decks.infection.find('Johannesburg')
+    game.infect(Khartoum, 3)
+    game.infect(Johannesburg, 3)
+
+    expect(game.outbreakCount).to.equal(0)
+    expect(game.cities.pick('Khartoum').infection.yellow).to.equal(3)
+
+    game.infect(Khartoum, 1)
+    expect(game.outbreakCount).to.equal(2)
+
+    game.infect(game.decks.infection.find('Kinshasa'), 3)
+    expect(game.outbreakCount).to.equal(5)
+  })
 })

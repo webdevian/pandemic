@@ -95,6 +95,8 @@ class Turn {
       this.player.pickUp(card)
     }
 
+    // TODO Check for maximum 7 cards
+
     return this.infectStage()
   }
 
