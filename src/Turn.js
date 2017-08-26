@@ -90,7 +90,7 @@ class Turn {
     for (let i = 0; i < 2; i++) {
       const card = this.game.decks.player.draw()
       if (card.type === 'epidemic') {
-        this.epidemic()
+        this.epidemic() // TODO
       }
       this.player.pickUp(card)
     }

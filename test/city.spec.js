@@ -126,4 +126,28 @@ describe('City class', () => {
     game.infect(game.decks.infection.find('Kinshasa'), 3)
     expect(game.outbreakCount).to.equal(5)
   })
+
+  it('Game over on 8th Outbreak', () => {
+    const game = new Game(2)
+    const Khartoum = game.decks.infection.find('Khartoum')
+    const Johannesburg = game.decks.infection.find('Johannesburg')
+    game.infect(Khartoum, 3)
+    game.infect(Johannesburg, 3)
+
+    expect(game.outbreakCount).to.equal(0)
+    expect(game.cities.pick('Khartoum').infection.yellow).to.equal(3)
+
+    game.infect(Khartoum, 1)
+    expect(game.outbreakCount).to.equal(2)
+
+    game.infect(game.decks.infection.find('Kinshasa'), 3)
+    expect(game.outbreakCount).to.equal(5)
+
+    try {
+      game.infect(game.decks.infection.find('Lagos'), 3)
+      expect(0).to.equal(1)
+    } catch (e) {
+      expect(e.message).to.equal('Game Over')
+    }
+  })
 })
