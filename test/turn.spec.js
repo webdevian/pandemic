@@ -209,4 +209,137 @@ describe('Turn actions', () => {
     expect(game.players[0].cards.length).to.equal(4)
     expect(game.players[1].cards.length).to.equal(4)
   })
+
+  it('Allow player to discover cure if they have 5 cards of the same colour and are at a research station', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 5) {
+        game.turn.player.cards.push(card)
+      }
+    })
+
+    game.turn.getAvailableActions()
+
+    expect(game.turn.player.cards.length).to.equal(5)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(1)
+    expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
+    const discarded = game.decks.player.discarded.length
+    const unique = [...new Set(game.turn.availableActions.discoverCure)]
+    expect(unique.length).to.equal(game.turn.availableActions.discoverCure.length)
+    game.turn.availableActions.discoverCure[0].do()
+    expect(game.decks.player.discarded.length).to.equal(discarded + 5)
+    expect(game.diseases.red.cured).to.equal(1)
+    expect(game.turn.player.cards.length).to.equal(0)
+  })
+
+  it('Allow player to discover cure if they have 6 cards of the same colour and are at a research station', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 6) {
+        game.turn.player.cards.push(card)
+      }
+    })
+
+    game.turn.getAvailableActions()
+
+    expect(game.turn.player.cards.length).to.equal(6)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(6)
+    expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
+    const discarded = game.decks.player.discarded.length
+    const unique = [...new Set(game.turn.availableActions.discoverCure)]
+    expect(unique.length).to.equal(game.turn.availableActions.discoverCure.length)
+    game.turn.availableActions.discoverCure[0].do()
+    expect(game.decks.player.discarded.length).to.equal(discarded + 5)
+    expect(game.diseases.red.cured).to.equal(1)
+    expect(game.turn.player.cards.length).to.equal(1)
+  })
+
+  it('Allow player to discover cure if they have 7 cards of the same colour and are at a research station', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 7) {
+        game.turn.player.cards.push(card)
+      }
+    })
+
+    game.turn.getAvailableActions()
+
+    expect(game.turn.player.cards.length).to.equal(7)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(21)
+    expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
+    const discarded = game.decks.player.discarded.length
+    const unique = [...new Set(game.turn.availableActions.discoverCure)]
+    expect(unique.length).to.equal(game.turn.availableActions.discoverCure.length)
+    game.turn.availableActions.discoverCure[0].do()
+    expect(game.decks.player.discarded.length).to.equal(discarded + 5)
+    expect(game.diseases.red.cured).to.equal(1)
+    expect(game.turn.player.cards.length).to.equal(2)
+  })
+
+  it('Player cannot discover cure if they are not at a research station', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 5) {
+        game.turn.player.cards.push(card)
+      }
+    })
+
+    game.turn.currentPosition.researchStation = 0
+
+    game.turn.getAvailableActions()
+
+    expect(game.turn.player.cards.length).to.equal(5)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+  })
+
+  it('Player cannot discover cure if it is already cured', () => {
+    const game = new Game(2)
+    game.start()
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 5) {
+        game.turn.player.cards.push(card)
+      }
+    })
+
+    game.diseases.red.cured = 1
+
+    game.turn.getAvailableActions()
+
+    expect(game.turn.player.cards.length).to.equal(5)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+  })
 })

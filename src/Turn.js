@@ -49,7 +49,8 @@ class Turn {
       shuttleFlight: this.getShuttleFlightOptions(),
       buildResearchStation: this.getBuildResearchStationOptions(),
       treat: this.getTreatOptions(),
-      shareKnowledge: this.getShareKnowledgeOptions()
+      shareKnowledge: this.getShareKnowledgeOptions(),
+      discoverCure: this.getDiscoverCureOptions()
     }
   }
 
@@ -303,6 +304,81 @@ class Turn {
         // TODO Check for 7 or more cards and prompt discard
       }
     })
+  }
+
+  /**
+   * Get options for discovering cure by discarding 5 matching cards at a
+   * research station. If player has more than 5 matching cards
+   * different combinations are offered
+   * @return {Array.Object}
+   */
+  getDiscoverCureOptions () {
+    const options = []
+    if (this.currentPosition.researchStation) {
+      const cardTotals = {}
+      this.player.cards.map(card => {
+        if (card.city) {
+          cardTotals[card.city.color] = cardTotals[card.city.color] ? cardTotals[card.city.color] + 1 : 1
+        }
+      })
+
+      Object.keys(cardTotals).map(color => {
+        const coloredCards = this.player.cards.filter(card => card.city && card.city.color === 'red')
+        if (!this.game.diseases[color].cured) {
+          this.combinations(coloredCards).map(array => {
+            if (array.length === 5) {
+              const curingCards = []
+              let curingString = ''
+              array.map(card => {
+                curingCards.push(card)
+                curingString += card.city.name + ', '
+              })
+              options.push({
+                label: 'Cure ' + color + ' with ' + curingString,
+                do: () => {
+                  this.doAction('discoverCure', {color, cards: curingCards})
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+
+    return options
+  }
+
+  /**
+   * Discard 5 cards of the same color at at a research station
+   * to cure the corresponding disease
+   * @param  {String} color Which disease
+   * @param  {Array.Card} cards Cards to discard
+   */
+  discoverCure ({color, cards}) {
+    this.game.diseases[color].cured = 1
+    // TODO Check for eradicated
+    const cardIndexes = cards.map(card => this.player.cards.indexOf(card))
+    cardIndexes.sort((a, b) => b - a)
+    cardIndexes.map(cardPosition => {
+      this.player.cards[cardPosition].discard()
+      this.player.cards.splice(cardPosition, 1)
+    })
+  }
+
+  /**
+   * Return all unique subset combinations of array items
+   * @param  {Array} array
+   * @return {Array.Array}
+   */
+  combinations (array) {
+    const results = [[]]
+    for (const value of array) {
+      const copy = [...results]
+      for (const prefix of copy) {
+        results.push(prefix.concat(value))
+      }
+    }
+    return results
   }
 }
 
