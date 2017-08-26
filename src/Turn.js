@@ -357,12 +357,7 @@ class Turn {
   discoverCure ({color, cards}) {
     this.game.diseases[color].cured = 1
     // TODO Check for eradicated
-    const cardIndexes = cards.map(card => this.player.cards.indexOf(card))
-    cardIndexes.sort((a, b) => b - a)
-    cardIndexes.map(cardPosition => {
-      this.player.cards[cardPosition].discard()
-      this.player.cards.splice(cardPosition, 1)
-    })
+    cards.map(card => card.discard())
   }
 
   /**

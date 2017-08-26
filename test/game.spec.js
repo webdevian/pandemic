@@ -101,4 +101,11 @@ describe('Game class', () => {
     game.turn.availableActions.drive[0].do()
     expect(game.turn.player.name).to.equal('player2')
   })
+
+  it('Player can manually discard a card', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.cards[0].discard()
+    expect(game.turn.player.cards.length).to.equal(3)
+  })
 })

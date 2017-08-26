@@ -21,6 +21,9 @@ class Card {
 
   discard () {
     this.deck.discard(this)
+    if (this.hand) {
+      this.hand.cards.splice(this.hand.cards.indexOf(this), 1)
+    }
   }
 }
 

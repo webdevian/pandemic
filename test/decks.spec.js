@@ -2,6 +2,7 @@
 const chai = require('chai')
 const expect = chai.expect
 const Deck = require('../src/Deck')
+const Player = require('../src/Player')
 
 describe('Deck Class', () => {
   it('Can create a new role deck', () => {
@@ -45,8 +46,8 @@ describe('Deck Class', () => {
 
   it('Can deal the player deck', () => {
     const deck = new Deck('player')
-    const player1 = { cards: [] }
-    const player2 = { cards: [] }
+    const player1 = new Player()
+    const player2 = new Player()
     deck.deal([player1, player2])
     expect(player1.cards.length).to.equal(4)
     expect(player2.cards.length).to.equal(4)
@@ -55,8 +56,8 @@ describe('Deck Class', () => {
 
   it('Should be 4 epidemic cards in an easy game', () => {
     const deck = new Deck('player')
-    const player1 = { cards: [] }
-    const player2 = { cards: [] }
+    const player1 = new Player()
+    const player2 = new Player()
     deck.deal([player1, player2])
     let epidemics = 0
     deck.cards.map(card => {
@@ -69,8 +70,8 @@ describe('Deck Class', () => {
 
   it('Should be 6 epidemic cards in a hard game', () => {
     const deck = new Deck('player')
-    const player1 = { cards: [] }
-    const player2 = { cards: [] }
+    const player1 = new Player()
+    const player2 = new Player()
     deck.deal([player1, player2], 'hard')
     let epidemics = 0
     deck.cards.map(card => {

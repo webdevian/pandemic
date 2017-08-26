@@ -14,6 +14,15 @@ class Player {
     this.cards = []
     this.position = 'Atlanta'
   }
+
+  /**
+   * Place a card in player's hand
+   * @param  {Card} card
+   */
+  pickUp (card) {
+    card.hand = this
+    this.cards.unshift(card)
+  }
 }
 
 module.exports = Player

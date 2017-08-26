@@ -44,6 +44,7 @@ describe('Turn actions', () => {
     game.turn.availableActions.directFlight[cityCardIndex].do()
     expect(game.turn.player.position).to.equal(city)
     expect(game.decks.player.cards.length).to.equal(length - 1)
+    expect(game.turn.player.cards.length).to.equal(3)
     expect(game.turn.actions).to.equal(3)
   })
 
@@ -64,6 +65,7 @@ describe('Turn actions', () => {
     game.turn.availableActions.charterFlight[0].do()
     expect(game.turn.player.position).to.equal('Algiers')
     expect(game.decks.player.cards.length).to.equal(length - 1)
+    expect(game.turn.player.cards.length).to.equal(3)
     expect(game.turn.actions).to.equal(3)
   })
 
@@ -96,6 +98,7 @@ describe('Turn actions', () => {
     game.turn.availableActions.buildResearchStation[0].do()
     expect(game.turn.currentPosition.researchStation).to.equal(1)
     expect(game.researchStations).to.equal(4)
+    expect(game.turn.player.cards.length).to.equal(3)
     expect(game.turn.actions).to.equal(3)
   })
 
@@ -221,7 +224,7 @@ describe('Turn actions', () => {
 
     redCards.forEach((card, index) => {
       if (index < 5) {
-        game.turn.player.cards.push(card)
+        game.turn.player.pickUp(card)
       }
     })
 
@@ -250,7 +253,7 @@ describe('Turn actions', () => {
 
     redCards.forEach((card, index) => {
       if (index < 6) {
-        game.turn.player.cards.push(card)
+        game.turn.player.pickUp(card)
       }
     })
 
@@ -279,7 +282,7 @@ describe('Turn actions', () => {
 
     redCards.forEach((card, index) => {
       if (index < 7) {
-        game.turn.player.cards.push(card)
+        game.turn.player.pickUp(card)
       }
     })
 
@@ -308,7 +311,7 @@ describe('Turn actions', () => {
 
     redCards.forEach((card, index) => {
       if (index < 5) {
-        game.turn.player.cards.push(card)
+        game.turn.player.pickUp(card)
       }
     })
 
@@ -331,7 +334,7 @@ describe('Turn actions', () => {
 
     redCards.forEach((card, index) => {
       if (index < 5) {
-        game.turn.player.cards.push(card)
+        game.turn.player.pickUp(card)
       }
     })
 

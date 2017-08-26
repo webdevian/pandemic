@@ -87,7 +87,7 @@ class Deck {
 
     Array.from(Array(cardsToDeal)).map(() => {
       players.map(player => {
-        player.cards.push(this.draw())
+        player.pickUp(this.draw())
       })
     })
 
