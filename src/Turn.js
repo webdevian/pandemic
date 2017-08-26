@@ -13,8 +13,6 @@ class Turn {
     this.game = game
     this.player = player
     this.actions = 4
-
-    this.getAvailableActions()
   }
 
   /**
@@ -36,13 +34,28 @@ class Turn {
   }
 
   /**
+   * City the active player is in
+   * @return {City}
+   */
+  get currentPosition () {
+    return this.game.cities.pick(this.player.position)
+  }
+
+  /**
+   * City the active player is in
+   * @param {City|String} city City name
+   */
+  set currentPosition (city) {
+    this.player.position = city.name || city
+  }
+
+  /**
    * Get a list of actions that a player can perform
    * @return {Object} Object with an array of options for each action type
    *                  Each option should have a label and a function to perform the action
    */
-  getAvailableActions () {
-    this.currentPosition = this.game.cities.pick(this.player.position)
-    this.availableActions = {
+  get availableActions () {
+    return {
       drive: this.getDriveOptions(),
       directFlight: this.getDirectFlightOptions(),
       charterFlight: this.getCharterFlightOptions(),
@@ -68,8 +81,6 @@ class Turn {
       // Do draw and infect stage first
       return this.end()
     }
-
-    this.getAvailableActions()
   }
 
   /**
@@ -103,7 +114,7 @@ class Turn {
    * @param  {String} city City to drive to
    */
   drive (city) {
-    this.game.move(this.player, city)
+    this.currentPosition = city
   }
 
   /**
@@ -132,7 +143,7 @@ class Turn {
    * @param  {Card} card
    */
   directFlight (card) {
-    this.game.move(this.player, card.name)
+    this.currentPosition = card.city
     card.discard()
   }
 
@@ -164,7 +175,7 @@ class Turn {
    * @param  {City} city
    */
   charterFlight ({card, city}) {
-    this.game.move(this.player, city.name)
+    this.currentPosition = city
     card.discard()
   }
 
@@ -193,7 +204,7 @@ class Turn {
    * @param  {City} city
    */
   shuttleFlight (city) {
-    this.game.move(this.player, city.name)
+    this.currentPosition = city
   }
 
   /**

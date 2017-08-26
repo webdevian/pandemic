@@ -59,7 +59,7 @@ describe('Turn actions', () => {
       }
     })
     game.turn.player.position = city
-    game.turn.getAvailableActions()
+
     const length = game.decks.player.cards.length
     expect(game.turn.availableActions.charterFlight).to.be.an('array')
     game.turn.availableActions.charterFlight[0].do()
@@ -75,7 +75,7 @@ describe('Turn actions', () => {
     expect(game.turn.availableActions.shuttleFlight.length).to.equal(0)
     game.buildResearchStation('Khartoum')
     expect(game.turn.availableActions.shuttleFlight).to.be.an('array')
-    game.turn.getAvailableActions()
+
     game.turn.availableActions.shuttleFlight[0].do()
     expect(game.turn.player.position).to.equal('Khartoum')
     expect(game.turn.actions).to.equal(3)
@@ -92,7 +92,7 @@ describe('Turn actions', () => {
       }
     })
     game.turn.player.position = city
-    game.turn.getAvailableActions()
+
     expect(game.turn.availableActions.buildResearchStation).to.be.an('array')
     expect(game.turn.availableActions.buildResearchStation.length).to.equal(1)
     game.turn.availableActions.buildResearchStation[0].do()
@@ -113,9 +113,9 @@ describe('Turn actions', () => {
       }
     })
     game.turn.player.position = city
-    game.turn.getAvailableActions()
+
     game.turn.currentPosition.researchStation = 1
-    game.turn.getAvailableActions()
+
     expect(game.turn.availableActions.buildResearchStation.length).to.equal(0)
   })
 
@@ -123,11 +123,11 @@ describe('Turn actions', () => {
     const game = new Game(2)
     game.start()
     game.turn.currentPosition.infection.blue = 0
-    game.turn.getAvailableActions()
+
     expect(game.turn.availableActions.treat).to.be.an('array')
     expect(game.turn.availableActions.treat.length).to.equal(0)
     game.turn.currentPosition.infection.blue = 1
-    game.turn.getAvailableActions()
+
     const totalBlue = game.diseases.blue.cubes
     expect(game.turn.availableActions.treat.length).to.equal(1)
     expect(game.turn.availableActions.treat[0].label).to.equal('Remove 1 blue disease cube')
@@ -141,12 +141,12 @@ describe('Turn actions', () => {
     const game = new Game(2)
     game.start()
     game.turn.currentPosition.infection.blue = 0
-    game.turn.getAvailableActions()
+
     expect(game.turn.availableActions.treat).to.be.an('array')
     expect(game.turn.availableActions.treat.length).to.equal(0)
     game.turn.currentPosition.infection.blue = 3
     game.diseases.blue.cured = true
-    game.turn.getAvailableActions()
+
     const totalBlue = game.diseases.blue.cubes
     expect(game.turn.availableActions.treat.length).to.equal(1)
     expect(game.turn.availableActions.treat[0].label).to.equal('Remove 3 blue disease cube')
@@ -170,19 +170,19 @@ describe('Turn actions', () => {
 
     game.players[0].position = city
     game.players[1].position = city
-    game.turn.getAvailableActions()
+
     expect(game.turn.availableActions.shareKnowledge).to.be.an('array')
     expect(game.turn.availableActions.shareKnowledge.length).to.equal(1)
     expect(game.turn.availableActions.shareKnowledge[0].label).to.equal('Give ' + city + ' card to player2')
 
     game.turn.end()
-    game.turn.getAvailableActions()
+
     expect(game.turn.availableActions.shareKnowledge).to.be.an('array')
     expect(game.turn.availableActions.shareKnowledge.length).to.equal(1)
     expect(game.turn.availableActions.shareKnowledge[0].label).to.equal('Take ' + city + ' card from player1')
 
     game.turn.availableActions.drive[0].do()
-    game.turn.getAvailableActions()
+
     expect(game.turn.availableActions.shareKnowledge.length).to.equal(0)
 
     game = new Game(2)
@@ -197,7 +197,7 @@ describe('Turn actions', () => {
 
     game.players[0].position = city
     game.players[1].position = city
-    game.turn.getAvailableActions()
+
     expect(game.turn.availableActions.shareKnowledge).to.be.an('array')
     expect(game.turn.availableActions.shareKnowledge.length).to.equal(1)
 
@@ -228,8 +228,6 @@ describe('Turn actions', () => {
       }
     })
 
-    game.turn.getAvailableActions()
-
     expect(game.turn.player.cards.length).to.equal(5)
     expect(game.turn.availableActions.discoverCure.length).to.equal(1)
     expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
@@ -257,8 +255,6 @@ describe('Turn actions', () => {
       }
     })
 
-    game.turn.getAvailableActions()
-
     expect(game.turn.player.cards.length).to.equal(6)
     expect(game.turn.availableActions.discoverCure.length).to.equal(6)
     expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
@@ -285,8 +281,6 @@ describe('Turn actions', () => {
         game.turn.player.pickUp(card)
       }
     })
-
-    game.turn.getAvailableActions()
 
     expect(game.turn.player.cards.length).to.equal(7)
     expect(game.turn.availableActions.discoverCure.length).to.equal(21)
@@ -317,8 +311,6 @@ describe('Turn actions', () => {
 
     game.turn.currentPosition.researchStation = 0
 
-    game.turn.getAvailableActions()
-
     expect(game.turn.player.cards.length).to.equal(5)
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
   })
@@ -339,8 +331,6 @@ describe('Turn actions', () => {
     })
 
     game.diseases.red.cured = 1
-
-    game.turn.getAvailableActions()
 
     expect(game.turn.player.cards.length).to.equal(5)
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
