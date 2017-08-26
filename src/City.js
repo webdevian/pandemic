@@ -28,22 +28,19 @@ class City {
 
   /**
    * Infect a city
+   * @param  {Game}
    * @param  {Number} [amount=1] How many infection cubes to add
    * @param  {String} disease    Which disease? Defaults to city's color
    * @return {Object}            Amount and disease, so game can deduct cubes from total
    */
-  infect (amount = 1, disease) {
+  infect (game, amount = 1, disease) {
     if (!disease) {
       disease = this.color
     }
 
     // Do outbreak here
     this.infection[disease] += amount
-
-    return {
-      disease,
-      amount
-    }
+    game.diseases[disease].cubes -= amount
   }
 
   /**

@@ -174,8 +174,7 @@ class Game {
    */
   infect (card, amount = 1, disease) {
     const city = this.cities.pick(card.city.name)
-    const infection = city.infect(amount, disease)
-    this.diseases[infection.disease].cubes -= infection.amount
+    city.infect(this, amount, disease)
     card.discard()
   }
 

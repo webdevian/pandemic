@@ -2,6 +2,7 @@
 const chai = require('chai')
 const expect = chai.expect
 const City = require('../src/City')
+const Game = require('../src/Game')
 
 describe('City class', () => {
   it('Can create a new city', () => {
@@ -41,19 +42,19 @@ describe('City class', () => {
     const london = new City({name: 'London', color: 'blue'})
     expect(london.infection).to.be.an('object')
     expect(london.infection.blue).to.equal(0)
-    london.infect()
+    london.infect(new Game())
     expect(london.infection.blue).to.equal(1)
   })
 
   it('City can be infected multiple times', () => {
     const london = new City({name: 'London', color: 'blue'})
-    london.infect(3)
+    london.infect(new Game(), 3)
     expect(london.infection.blue).to.equal(3)
   })
 
   it('City can be infected with a different disease', () => {
     const london = new City({name: 'London', color: 'blue'})
-    london.infect(1, 'red')
+    london.infect(new Game(), 1, 'red')
     expect(london.infection.blue).to.equal(0)
     expect(london.infection.red).to.equal(1)
   })
