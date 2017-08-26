@@ -47,6 +47,10 @@ class City {
     // Do outbreak here
     this.infection[disease] += amount
     game.diseases[disease].cubes -= amount
+
+    if (game.diseases[disease].cubes < 1) {
+      throw new Error('Game Over')
+    }
   }
 
   /**

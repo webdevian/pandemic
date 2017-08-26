@@ -131,4 +131,23 @@ describe('Game class', () => {
       expect(e.message).to.equal('Game Over')
     }
   })
+
+  it('Game ends when a disease\'s cubes run out', () => {
+    const game = new Game(2)
+
+    game.infect(game.decks.infection.find('Kinshasa'), 3)
+    game.infect(game.decks.infection.find('Johannesburg'), 3)
+    game.infect(game.decks.infection.find('Mexico City'), 3)
+    game.infect(game.decks.infection.find('Lagos'), 3)
+    game.infect(game.decks.infection.find('Lima'), 3)
+    game.infect(game.decks.infection.find('Bogota'), 3)
+    game.infect(game.decks.infection.find('Los Angeles'), 3)
+
+    try {
+      game.infect(game.decks.infection.find('Buenos Aires'), 3)
+      expect(0).to.equal(1)
+    } catch (e) {
+      expect(e.message).to.equal('Game Over')
+    }
+  })
 })
