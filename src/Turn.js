@@ -270,7 +270,7 @@ class Turn {
           options.push({
             label: 'Take ' + this.currentPosition.name + ' card from ' + player.name,
             do: () => {
-              return this.doAction('shareKnowledge', {card: player.cards.filter(card => card.name === this.currentPosition.name)[0], from: player, to: this.player})
+              return this.doAction('shareKnowledge', {card: player.cards.filter(card => card.name === this.currentPosition.name)[0], to: this.player})
             }
           })
         }
@@ -279,7 +279,7 @@ class Turn {
           options.push({
             label: 'Give ' + this.currentPosition.name + ' card to ' + player.name,
             do: () => {
-              return this.doAction('shareKnowledge', {card: this.player.cards.filter(card => card.name === this.currentPosition.name)[0], from: this.player, to: player})
+              return this.doAction('shareKnowledge', {card: this.player.cards.filter(card => card.name === this.currentPosition.name)[0], to: player})
             }
           })
         }
@@ -292,18 +292,10 @@ class Turn {
   /**
    * Give or take a card to/from another player
    * @param  {Card} card    The card to share
-   * @param  {Player} from  Player giving the card
    * @param  {Player} to    Player receiving the card
    */
-  shareKnowledge ({card, from, to}) {
-    from.cards.map((cardInHand, index) => {
-      if (card.name === cardInHand.name) {
-        to.cards.unshift(cardInHand)
-        from.cards.splice(index, 1)
-
-        // TODO Check for 7 or more cards and prompt discard
-      }
-    })
+  shareKnowledge ({card, to}) {
+    to.pickUp(card)
   }
 
   /**

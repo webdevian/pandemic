@@ -20,6 +20,10 @@ class Player {
    * @param  {Card} card
    */
   pickUp (card) {
+    if (card.hand) {
+      card.hand.cards.splice(card.hand.cards.indexOf(card), 1)
+    }
+
     card.hand = this
     this.cards.unshift(card)
   }
