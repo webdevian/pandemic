@@ -310,7 +310,6 @@ describe('Turn actions', () => {
     })
 
     game.turn.currentPosition.researchStation = 0
-
     expect(game.turn.player.cards.length).to.equal(5)
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
   })

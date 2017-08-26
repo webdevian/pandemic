@@ -36,6 +36,8 @@ class City {
     if (!disease) {
       disease = this.color
     }
+
+    // Do outbreak here
     this.infection[disease] += amount
 
     return {

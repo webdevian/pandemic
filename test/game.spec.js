@@ -91,14 +91,22 @@ describe('Game class', () => {
     expect(game.turn.player.name).to.equal('player1')
   })
 
-  it('Move onto next player after 4 actions', () => {
+  it('Move onto draw and infect after 4 actions', () => {
     const game = new Game(2)
     game.start()
     expect(game.turn.player.name).to.equal('player1')
     game.turn.availableActions.drive[0].do()
     game.turn.availableActions.drive[0].do()
     game.turn.availableActions.drive[0].do()
+
+    // Put safe cards at top of deck
+    game.players[1].cards.unshift(game.turn.player.cards[0])
+    game.players[1].cards.unshift(game.turn.player.cards[1])
     game.turn.availableActions.drive[0].do()
+    expect(game.players[0].cards.length).to.equal(6)
+
+    expect(game.diseases.red.cubes + game.diseases.yellow.cubes + game.diseases.black.cubes + game.diseases.blue.cubes).to.equal(96 - (9 + 6 + 3 + 2))
+
     expect(game.turn.player.name).to.equal('player2')
   })
 

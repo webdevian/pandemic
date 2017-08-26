@@ -90,6 +90,15 @@ class Game {
   }
 
   /**
+   * Rate of infection, based on infectionLevel
+   * @return {Number}
+   */
+  get infectionRate () {
+    const rates = [2, 2, 2, 3, 3, 4, 4]
+    return rates[this.infectionLevel]
+  }
+
+  /**
    * Create player instances for a new game
    * @param  {Number} players How many players (2-4)
    */

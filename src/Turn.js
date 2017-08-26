@@ -79,8 +79,31 @@ class Turn {
 
     if (!this.actions) {
       // Do draw and infect stage first
-      return this.end()
+      return this.drawStage()
     }
+  }
+
+  /**
+   * Draw 2 cards from the player deck
+   */
+  drawStage () {
+    for (let i = 0; i < 2; i++) {
+      const card = this.game.decks.player.draw()
+      if (card.type === 'epidemic') {
+        this.epidemic()
+      }
+      this.player.pickUp(card)
+    }
+
+    return this.infectStage()
+  }
+
+  infectStage () {
+    for (let i = 0; i < this.game.infectionRate; i++) {
+      const infectCard = this.game.decks.infection.draw()
+      this.game.infect(infectCard)
+    }
+    this.end()
   }
 
   /**
