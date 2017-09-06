@@ -446,4 +446,27 @@ describe('Turn actions', () => {
     expect(game.diseases.red.eradicated).to.equal(1)
     expect(game.turn.currentPosition.infection.red).to.equal(0)
   })
+
+  it('Throw an epidemic', () => {
+    const game = new Game(2)
+    game.start()
+
+    let i = 0
+
+    do {
+      if (game.decks.player.cards[0].type === 'epidemic') {
+        i = 1
+      } else {
+        game.decks.player.cards[0].discard()
+      }
+    } while (!i)
+
+    game.turn.drawStage()
+    expect(game.infectionLevel).to.equal(1)
+    expect(game.infectionRate).to.equal(2)
+    expect(game.decks.infection.cards.length).to.equal(45)
+    expect(game.decks.infection.discarded.length).to.equal(3)
+    const infectedCity = game.cities.pick(game.decks.infection.discarded[2].city.name)
+    expect(infectedCity.infection[infectedCity.color]).to.equal(3)
+  })
 })

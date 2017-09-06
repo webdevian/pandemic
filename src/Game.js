@@ -202,6 +202,29 @@ class Game {
   }
 
   /**
+   * Throw an epidemic
+   */
+  epidemic () {
+    // Stage 1: Increase infection level
+    this.infectionLevel++
+
+    // Stage 2: Infect a city with 3 cubes
+    const card = this.decks.infection.draw(1)
+    const city = this.cities.pick(card.city.name)
+    city.infect(this, 3)
+
+    // Stage 3: Intensify - Reshuffle infection discard pile into infection pile
+    this.decks.infection.shuffleDiscard()
+
+    this.decks.infection.discarded.slice().map(card => {
+      this.decks.infection.cards.unshift(card)
+    })
+
+    this.decks.infection.discarded = []
+    this.decks.infection.discarded.unshift(card)
+  }
+
+  /**
    * Build a google maps static api for the status of the board
    * @member
    * @return {String} Url

@@ -201,14 +201,24 @@ class Deck {
 
   /**
    * Pick the top card and remove it from the deck
+   * @param {Boolean} [bottom=false] Draw from the bottom?
    * @return {Card} Chosen card
    */
-  draw () {
+  draw (bottom = false) {
     if (this.type === 'player' && this.cards.length < 2) {
       throw new Error('Game Over')
     }
-    const card = this.cards[0]
-    this.cards.splice(0, 1)
+
+    let card
+
+    if (bottom) {
+      const position = this.cards.length - 1
+      card = this.cards[position]
+      this.cards.splice(position, 1)
+    } else {
+      card = this.cards[0]
+      this.cards.splice(0, 1)
+    }
     return card
   }
 
@@ -232,6 +242,13 @@ class Deck {
    */
   shuffle () {
     this.cards = this.randomiseArray(this.cards.slice())
+  }
+
+  /**
+   * Shuffle the cards in the discard pile
+   */
+  shuffleDiscard () {
+    this.discarded = this.randomiseArray(this.discarded.slice())
   }
 }
 

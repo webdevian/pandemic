@@ -90,7 +90,7 @@ class Turn {
     for (let i = 0; i < 2; i++) {
       const card = this.game.decks.player.draw()
       if (card.type === 'epidemic') {
-        this.epidemic() // TODO
+        this.game.epidemic()
       }
       this.player.pickUp(card)
     }
@@ -102,7 +102,7 @@ class Turn {
 
   infectStage () {
     for (let i = 0; i < this.game.infectionRate; i++) {
-      const infectCard = this.game.decks.infection.draw()
+      const infectCard = this.game.decks.infection.cards[0]
       this.game.infect(infectCard)
     }
     this.end()

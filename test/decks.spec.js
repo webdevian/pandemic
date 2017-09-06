@@ -30,6 +30,14 @@ describe('Deck Class', () => {
     expect(drawnCard).to.deep.equal(topCard)
   })
 
+  it('Can draw a card from bottom of deck', () => {
+    const roles = new Deck('role')
+    const bottomCard = roles.cards[6]
+    const drawnCard = roles.draw(1)
+    expect(roles.cards.length).to.equal(6)
+    expect(drawnCard).to.deep.equal(bottomCard)
+  })
+
   it('Can set up an infection deck', () => {
     const infections = new Deck('infection')
     expect(infections.cards).to.be.an('array')
