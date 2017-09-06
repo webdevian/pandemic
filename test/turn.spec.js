@@ -334,4 +334,116 @@ describe('Turn actions', () => {
     expect(game.turn.player.cards.length).to.equal(5)
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
   })
+
+  it('Mark a disease as eradicated if it is cured and there are no infected cities ', () => {
+    const game = new Game(2)
+    game.buildResearchStation('Atlanta')
+    game.players.map(player => {
+      game.move(player, 'Atlanta')
+    })
+    game.newTurn()
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 5) {
+        game.turn.player.pickUp(card)
+      }
+    })
+
+    expect(game.turn.player.cards.length).to.equal(5)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(1)
+    expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
+    const discarded = game.decks.player.discarded.length
+    const unique = [...new Set(game.turn.availableActions.discoverCure)]
+    expect(unique.length).to.equal(game.turn.availableActions.discoverCure.length)
+    game.turn.availableActions.discoverCure[0].do()
+    expect(game.decks.player.discarded.length).to.equal(discarded + 5)
+    expect(game.diseases.red.cured).to.equal(1)
+    expect(game.diseases.red.eradicated).to.equal(1)
+    expect(game.turn.player.cards.length).to.equal(0)
+  })
+
+  it('Mark a disease as eradicated if it is cured when removing the last infection cube', () => {
+    const game = new Game(2)
+    game.buildResearchStation('Atlanta')
+    game.players.map(player => {
+      game.move(player, 'Atlanta')
+    })
+    game.newTurn()
+
+    // Infect Atlanta with one red cube
+    game.turn.currentPosition.infect(game, 1, 'red')
+
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 5) {
+        game.turn.player.pickUp(card)
+      }
+    })
+
+    expect(game.turn.player.cards.length).to.equal(5)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(1)
+    expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
+    const discarded = game.decks.player.discarded.length
+    const unique = [...new Set(game.turn.availableActions.discoverCure)]
+    expect(unique.length).to.equal(game.turn.availableActions.discoverCure.length)
+    game.turn.availableActions.discoverCure[0].do()
+    expect(game.decks.player.discarded.length).to.equal(discarded + 5)
+    expect(game.diseases.red.cured).to.equal(1)
+    expect(game.diseases.red.eradicated).to.equal(0)
+    expect(game.turn.player.cards.length).to.equal(0)
+
+    expect(game.turn.availableActions.treat.length).to.equal(1)
+    expect(game.turn.availableActions.treat[0].label).to.equal('Remove 1 red disease cube')
+    game.turn.availableActions.treat[0].do()
+
+    expect(game.diseases.red.eradicated).to.equal(1)
+  })
+
+  it('Infection cubes aren\'t added to a city if the disease is eradicated', () => {
+    const game = new Game(2)
+    game.buildResearchStation('Atlanta')
+    game.players.map(player => {
+      game.move(player, 'Atlanta')
+    })
+    game.newTurn()
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 5) {
+        game.turn.player.pickUp(card)
+      }
+    })
+
+    expect(game.turn.player.cards.length).to.equal(5)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(1)
+    expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
+    const discarded = game.decks.player.discarded.length
+    const unique = [...new Set(game.turn.availableActions.discoverCure)]
+    expect(unique.length).to.equal(game.turn.availableActions.discoverCure.length)
+    game.turn.availableActions.discoverCure[0].do()
+    expect(game.decks.player.discarded.length).to.equal(discarded + 5)
+    expect(game.diseases.red.cured).to.equal(1)
+    expect(game.diseases.red.eradicated).to.equal(1)
+    expect(game.turn.player.cards.length).to.equal(0)
+
+    game.turn.currentPosition.infect(game, 1, 'red')
+
+    expect(game.diseases.red.cured).to.equal(1)
+    expect(game.diseases.red.eradicated).to.equal(1)
+    expect(game.turn.currentPosition.infection.red).to.equal(0)
+  })
 })

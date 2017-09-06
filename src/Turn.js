@@ -291,6 +291,7 @@ class Turn {
   treat ({disease, cureAmount}) {
     this.currentPosition.infection[disease] -= cureAmount
     this.game.diseases[disease].cubes += cureAmount
+    this.game.checkEradicated(disease)
   }
 
   /**
@@ -364,7 +365,7 @@ class Turn {
               options.push({
                 label: 'Cure ' + color + ' with ' + curingString,
                 do: () => {
-                  this.doAction('discoverCure', {color, cards: curingCards})
+                  this.doAction('discoverCure', {disease: color, cards: curingCards})
                 }
               })
             }
@@ -382,9 +383,9 @@ class Turn {
    * @param  {String} color Which disease
    * @param  {Array.Card} cards Cards to discard
    */
-  discoverCure ({color, cards}) {
-    this.game.diseases[color].cured = 1
-    // TODO Check for eradicated
+  discoverCure ({disease, cards}) {
+    this.game.diseases[disease].cured = 1
+    this.game.checkEradicated(disease)
     cards.map(card => card.discard())
   }
 

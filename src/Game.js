@@ -189,6 +189,19 @@ class Game {
   }
 
   /**
+   * Check if a disease is eradicated and mark it if it is
+   * @param  {String} disease Disease colour to check
+   */
+  checkEradicated (disease) {
+    if (this.diseases[disease].cured && this.diseases[disease].cubes === 24) {
+      this.diseases[disease].eradicated = 1
+      return true
+    }
+
+    return false
+  }
+
+  /**
    * Build a google maps static api for the status of the board
    * @member
    * @return {String} Url

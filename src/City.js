@@ -39,6 +39,10 @@ class City {
       disease = this.color
     }
 
+    if (game.diseases[disease].eradicated) {
+      return false
+    }
+
     if (this.infection[disease] + amount > 3) {
       this.infection[disease] = 3
       return this.outbreak(game, disease, outbreakSources)
