@@ -30,18 +30,16 @@ describe('Turn actions', () => {
     const game = new Game(2)
     game.start()
     let city
-    let cityCardIndex
     game.turn.player.cards.some((card, index) => {
-      if (card.type === 'city') {
+      if (card.type === 'city' && card.name !== 'Atlanta') {
         city = card.name
-        cityCardIndex = index
         return true
       }
     })
-    // TODO Catch flaky test by injecting city card
+
     const length = game.decks.player.cards.length
     expect(game.turn.availableActions.directFlight).to.be.an('array')
-    game.turn.availableActions.directFlight[cityCardIndex].do()
+    game.turn.availableActions.directFlight[0].do()
     expect(game.turn.player.position).to.equal(city)
     expect(game.decks.player.cards.length).to.equal(length - 1)
     expect(game.turn.player.cards.length).to.equal(3)
