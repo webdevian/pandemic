@@ -435,6 +435,12 @@ class Turn {
    * @return {Array.Object}
    */
   getDiscoverCureOptions () {
+    let requiredCards = 5
+
+    if (this.player.is('scientist')) {
+      requiredCards = 4
+    }
+
     const options = []
     if (this.currentPosition.researchStation) {
       const cardTotals = {}
@@ -448,7 +454,7 @@ class Turn {
         const coloredCards = this.player.cards.filter(card => card.city && card.city.color === 'red')
         if (!this.game.diseases[color].cured) {
           this.combinations(coloredCards).map(array => {
-            if (array.length === 5) {
+            if (array.length === requiredCards) {
               const curingCards = []
               let curingString = ''
               array.map(card => {

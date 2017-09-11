@@ -88,3 +88,37 @@ describe('Contingency planner role', () => {
     expect(game.turn.actions).to.equal(3)
   }, 2)
 })
+
+describe('Scientist role', () => {
+  it('Only needs 4 cards to find a cure', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.role = {
+      name: 'Scientist',
+      key: 'scientist',
+      color: 'white'
+    }
+    expect(game.turn.availableActions.discoverCure).to.be.an('array')
+    expect(game.turn.availableActions.discoverCure.length).to.equal(0)
+
+    game.turn.player.cards.length = 0
+    const redCards = game.decks.player.cards.filter(card => card.city && card.city.color === 'red')
+
+    redCards.forEach((card, index) => {
+      if (index < 4) {
+        game.turn.player.pickUp(card)
+      }
+    })
+
+    expect(game.turn.player.cards.length).to.equal(4)
+    expect(game.turn.availableActions.discoverCure.length).to.equal(1)
+    expect(game.turn.availableActions.discoverCure[0].label).to.contain('Cure red with')
+    const discarded = game.decks.player.discarded.length
+    const unique = [...new Set(game.turn.availableActions.discoverCure)]
+    expect(unique.length).to.equal(game.turn.availableActions.discoverCure.length)
+    game.turn.availableActions.discoverCure[0].do()
+    expect(game.decks.player.discarded.length).to.equal(discarded + 4)
+    expect(game.diseases.red.cured).to.equal(1)
+    expect(game.turn.player.cards.length).to.equal(0)
+  })
+})

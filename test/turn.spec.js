@@ -356,6 +356,7 @@ describe('Turn actions', () => {
       game.move(player, 'Atlanta')
     })
     game.newTurn()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.discoverCure).to.be.an('array')
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
 
@@ -388,6 +389,7 @@ describe('Turn actions', () => {
       game.move(player, 'Atlanta')
     })
     game.newTurn()
+    game.turn.player.role = {}
 
     // Infect Atlanta with one red cube
     game.turn.currentPosition.infect(game, 1, 'red')
@@ -430,6 +432,7 @@ describe('Turn actions', () => {
       game.move(player, 'Atlanta')
     })
     game.newTurn()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.discoverCure).to.be.an('array')
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
 
