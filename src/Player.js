@@ -12,7 +12,29 @@ class Player {
   constructor (name) {
     this.name = name
     this.cards = []
+    this.role = {}
     this.position = 'Atlanta'
+  }
+
+  /**
+   * Does the player match the given role
+   * @param  {String}  key Key for role
+   */
+  is (key) {
+    return this.role.key === key
+  }
+
+  /**
+   * Assign a role card to a player
+   * @param  {Card} card Role card
+   */
+  assignRole (card) {
+    this.role = {
+      card: card,
+      key: card.key,
+      name: card.name,
+      color: card.color
+    }
   }
 
   /**
