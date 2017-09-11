@@ -44,15 +44,6 @@ class Turn {
   }
 
   /**
-   * City the active player is in
-   * @param {City|String} city City name
-   */
-  set currentPosition (city) {
-    city = city.name || city
-    this.game.move(this.player, city)
-  }
-
-  /**
    * Get a list of actions that a player can perform
    * @return {Object} Object with an array of options for each action type
    *                  Each option should have a label and a function to perform the action
@@ -233,7 +224,7 @@ class Turn {
    * @param  {String} city City to drive to
    */
   drive (city) {
-    this.currentPosition = city
+    this.game.move(this.player, city)
   }
 
   /**
@@ -262,7 +253,7 @@ class Turn {
    * @param  {Card} card
    */
   directFlight (card) {
-    this.currentPosition = card.city
+    this.game.move(this.player, card.city.name)
     card.discard()
   }
 
@@ -294,7 +285,7 @@ class Turn {
    * @param  {City} city
    */
   charterFlight ({card, city}) {
-    this.currentPosition = city
+    this.game.move(this.player, city.name)
     card.discard()
   }
 
@@ -323,7 +314,7 @@ class Turn {
    * @param  {City} city
    */
   shuttleFlight (city) {
-    this.currentPosition = city
+    this.game.move(this.player, city.name)
   }
 
   /**
