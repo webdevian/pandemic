@@ -115,7 +115,14 @@ class Game {
   pickRoles () {
     const roles = new Deck('role')
     this.players.map(player => {
-      player.role = roles.draw()
+      const role = roles.draw()
+
+      player.role = {
+        card: role,
+        key: role.key,
+        name: role.name,
+        color: role.color
+      }
     })
   }
 
