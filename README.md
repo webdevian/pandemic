@@ -17,3 +17,8 @@
 
 - Tests are run with [Mocha](https://mochajs.org) and organised using the [BDD interface](https://mochajs.org/#bdd)
 - Test assertions are written with [Chai](http://chaijs.com/) and the [BDD/Expect style](http://chaijs.com/api/bdd/)
+
+## TODO
+
+- Events
+- Role abilities
