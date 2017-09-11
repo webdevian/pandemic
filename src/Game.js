@@ -133,6 +133,18 @@ class Game {
    */
   move (player, city) {
     player.position = city
+
+    if (player.is('medic')) {
+      Object.keys(this.diseases).map(disease => {
+        if (this.diseases[disease].cured && this.cities.pick(city).infection[disease]) {
+          this.turn.treat({
+            disease,
+            cureAmount: this.cities.pick(city).infection[disease]
+          })
+        }
+        this.cities.pick(city)
+      })
+    }
   }
 
   /**

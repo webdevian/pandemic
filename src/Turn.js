@@ -50,18 +50,6 @@ class Turn {
   set currentPosition (city) {
     city = city.name || city
     this.game.move(this.player, city)
-
-    if (this.player.is('medic')) {
-      Object.keys(this.game.diseases).map(disease => {
-        if (this.game.diseases[disease].cured && this.game.cities.pick(city).infection[disease]) {
-          this.treat({
-            disease,
-            cureAmount: this.game.cities.pick(city).infection[disease]
-          })
-        }
-        this.game.cities.pick(city)
-      })
-    }
   }
 
   /**
