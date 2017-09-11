@@ -35,6 +35,10 @@ class Player {
       name: card.name,
       color: card.color
     }
+
+    if (this.is('contingency')) {
+      this.role.savedCard = null
+    }
   }
 
   /**

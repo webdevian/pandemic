@@ -95,6 +95,8 @@ class Turn {
       actions.discoverCure = this.getDiscoverCureOptions()
     }
 
+    Object.assign(actions, this.getRoleActions())
+
     return actions
   }
 
@@ -158,12 +160,52 @@ class Turn {
   }
 
   /**
-   * Complete the action on an event card
-   * @param  {Card} card Event card
+   * Get actions specific to current player
+   * @return {Object}
    */
-  doEvent (card) {
+  getRoleActions () {
+    const actions = {}
+
+    if (this.player.is('contingency')) {
+      actions.contingency = []
+
+      this.game.decks.player.discarded.filter(card => card.type === 'event').map(card => {
+        actions.contingency.push({
+          label: 'Pick up ' + card.name,
+          do: () => {
+            this.actions--
+            this.player.role.savedCard = card
+            this.player.role.savedCard.hand = null
+            this.game.decks.player.discarded.splice(this.game.decks.player.discarded.indexOf(card), 1)
+          }
+        })
+      })
+
+      if (this.player.role.savedCard) {
+        const card = this.player.role.savedCard
+        actions.savedCard = {
+          label: 'Saved Card: ' + card.name,
+          do: () => {
+            this.doEvent(card, false)
+            this.player.role.savedCard = null
+          }
+        }
+      }
+    }
+
+    return actions
+  }
+
+  /**
+   * Complete the action on an event card
+   * @param {Card} card Event card
+   * @param {Bolean} [discard=true] Should card be discarded?
+   */
+  doEvent (card, discard = true) {
     // TODO Set up actual events
-    card.discard()
+    if (discard) {
+      card.discard()
+    }
   }
 
   /**

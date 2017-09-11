@@ -7,6 +7,7 @@ describe('Turn actions', () => {
   it('Gives options on the first turn', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn).to.be.an('object')
     expect(game.turn.constructor.name).to.equal('Turn')
     expect(game.turn.actions).to.equal(4)
@@ -19,6 +20,7 @@ describe('Turn actions', () => {
   it('Allow player to drive to adjacent city', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.drive[0].label).to.equal('Drive to Chicago')
     game.turn.availableActions.drive[0].do()
     expect(game.players[0].position).to.equal('Chicago')
@@ -29,6 +31,7 @@ describe('Turn actions', () => {
   it('Allow player to fly directly to a city', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     let city
     game.turn.player.cards.some((card, index) => {
       if (card.type === 'city' && card.name !== 'Atlanta') {
@@ -49,6 +52,7 @@ describe('Turn actions', () => {
   it('Allow player to charter a flight to any city', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     let city
     game.turn.player.cards.some((card, index) => {
       if (card.type === 'city') {
@@ -70,6 +74,7 @@ describe('Turn actions', () => {
   it('Allow player to shuttle flight between research stations', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.shuttleFlight.length).to.equal(0)
     game.buildResearchStation('Khartoum')
     expect(game.turn.availableActions.shuttleFlight).to.be.an('array')
@@ -82,6 +87,7 @@ describe('Turn actions', () => {
   it('Allow player to build a reaserch station in current city', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     let city
     game.turn.player.cards.some((card, index) => {
       if (card.type === 'city') {
@@ -103,6 +109,7 @@ describe('Turn actions', () => {
   it('Don\'t allow player to build a reaserch station in current city if one already exists', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     let city
     game.turn.player.cards.some((card, index) => {
       if (card.type === 'city') {
@@ -120,6 +127,7 @@ describe('Turn actions', () => {
   it('Allow player to remove 1 disease cube in current city', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     game.turn.currentPosition.infection.blue = 0
 
     expect(game.turn.availableActions.treat).to.be.an('array')
@@ -138,6 +146,7 @@ describe('Turn actions', () => {
   it('Allow player to clear cured disease cubes in current city', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     game.turn.currentPosition.infection.blue = 0
 
     expect(game.turn.availableActions.treat).to.be.an('array')
@@ -157,6 +166,7 @@ describe('Turn actions', () => {
   it('Allow players to share a card when both in that city', () => {
     let game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     let city
 
     game.turn.player.cards.some((card, index) => {
@@ -185,6 +195,7 @@ describe('Turn actions', () => {
 
     game = new Game(2)
     game.start()
+    game.turn.player.role = {}
 
     game.turn.player.cards.some((card, index) => {
       if (card.type === 'city') {
@@ -214,6 +225,7 @@ describe('Turn actions', () => {
   it('Allow player to discover cure if they have 5 cards of the same colour and are at a research station', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.discoverCure).to.be.an('array')
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
 
@@ -241,6 +253,7 @@ describe('Turn actions', () => {
   it('Allow player to discover cure if they have 6 cards of the same colour and are at a research station', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.discoverCure).to.be.an('array')
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
 
@@ -268,6 +281,7 @@ describe('Turn actions', () => {
   it('Allow player to discover cure if they have 7 cards of the same colour and are at a research station', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.discoverCure).to.be.an('array')
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
 
@@ -295,6 +309,7 @@ describe('Turn actions', () => {
   it('Player cannot discover cure if they are not at a research station', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.discoverCure).to.be.an('array')
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
 
@@ -315,6 +330,7 @@ describe('Turn actions', () => {
   it('Player cannot discover cure if it is already cured', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.availableActions.discoverCure).to.be.an('array')
     expect(game.turn.availableActions.discoverCure.length).to.equal(0)
 
@@ -448,6 +464,7 @@ describe('Turn actions', () => {
   it('Throw an epidemic', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
 
     let i = 0
 
@@ -477,6 +494,7 @@ describe('Turn actions', () => {
   it('If a player has more than 7 cards, the only action is to discard', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
 
     for (let i = 0; i < 4; i++) {
       const card = game.decks.player.draw()
@@ -492,6 +510,7 @@ describe('Turn actions', () => {
   it('Player can discard a card when they have more than 7 cards', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
 
     for (let i = 0; i < 4; i++) {
       const card = game.decks.player.draw()
@@ -510,6 +529,7 @@ describe('Turn actions', () => {
   it('Player can discard a card when they have more than 8 cards', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
 
     for (let i = 0; i < 5; i++) {
       const card = game.decks.player.draw()
@@ -536,6 +556,7 @@ describe('Turn actions', () => {
   it('Player has option for each event, at all stages of turn', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
 
     const events = game.decks.player.cards.filter(card => card.type === 'event')
 
@@ -552,6 +573,7 @@ describe('Turn actions', () => {
   it('When player plays an event, the card is discarded', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
 
     const events = game.decks.player.cards.filter(card => card.type === 'event')
 
