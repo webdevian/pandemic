@@ -57,6 +57,8 @@ class Turn {
    *                  Each option should have a label and a function to perform the action
    */
   get availableActions () {
+    let actions = {}
+
     if (this.player.cards.length > 7) {
       return {
         discard: this.getDiscardOptions()
@@ -66,40 +68,35 @@ class Turn {
     if (!this.actions) {
       if (!this.drawn) {
         // Do draw and infect stage first
-        return {
-          draw: {
-            label: 'Draw 2 cards',
-            do: () => this.drawStage()
-          }
+        actions.draw = {
+          label: 'Draw 2 cards',
+          do: () => this.drawStage()
         }
-      }
-      if (!this.infected) {
-        return {
-          infect: {
-            label: 'Infect cities',
-            do: () => this.infectStage()
-          }
+      } else if (!this.infected) {
+        actions.infect = {
+          label: 'Infect cities',
+          do: () => this.infectStage()
         }
-      }
-
-      return {
-        end: {
+      } else {
+        actions.end = {
           label: 'End Turn',
           do: () => this.end()
         }
       }
+    } else {
+      actions = {
+        drive: this.getDriveOptions(),
+        directFlight: this.getDirectFlightOptions(),
+        charterFlight: this.getCharterFlightOptions(),
+        shuttleFlight: this.getShuttleFlightOptions(),
+        buildResearchStation: this.getBuildResearchStationOptions(),
+        treat: this.getTreatOptions(),
+        shareKnowledge: this.getShareKnowledgeOptions(),
+        discoverCure: this.getDiscoverCureOptions()
+      }
     }
 
-    return {
-      drive: this.getDriveOptions(),
-      directFlight: this.getDirectFlightOptions(),
-      charterFlight: this.getCharterFlightOptions(),
-      shuttleFlight: this.getShuttleFlightOptions(),
-      buildResearchStation: this.getBuildResearchStationOptions(),
-      treat: this.getTreatOptions(),
-      shareKnowledge: this.getShareKnowledgeOptions(),
-      discoverCure: this.getDiscoverCureOptions()
-    }
+    return actions
   }
 
   /**
