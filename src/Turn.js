@@ -48,7 +48,20 @@ class Turn {
    * @param {City|String} city City name
    */
   set currentPosition (city) {
-    this.player.position = city.name || city
+    city = city.name || city
+    this.game.move(this.player, city)
+
+    if (this.player.is('medic')) {
+      Object.keys(this.game.diseases).map(disease => {
+        if (this.game.diseases[disease].cured && this.game.cities.pick(city).infection[disease]) {
+          this.treat({
+            disease,
+            cureAmount: this.game.cities.pick(city).infection[disease]
+          })
+        }
+        this.game.cities.pick(city)
+      })
+    }
   }
 
   /**
@@ -275,7 +288,7 @@ class Turn {
       if (this.isInCity(card)) {
         this.game.cities.map(city => {
           options.push({
-            label: 'Charter flight to ' + city,
+            label: 'Charter flight to ' + city.name,
             do: () => {
               return this.doAction('charterFlight', {card, city})
             }
@@ -363,7 +376,7 @@ class Turn {
 
     Object.keys(this.currentPosition.infection).map(disease => {
       if (this.currentPosition.infection[disease]) {
-        const cureAmount = this.game.diseases[disease].cured ? this.currentPosition.infection[disease] : 1
+        const cureAmount = this.game.diseases[disease].cured || this.player.is('medic') ? this.currentPosition.infection[disease] : 1
         options.push({
           label: 'Remove ' + cureAmount + ' ' + disease + ' disease cube',
           do: () => {

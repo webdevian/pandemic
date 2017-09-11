@@ -13,7 +13,6 @@ class Player {
     this.name = name
     this.cards = []
     this.role = {}
-    this.position = 'Atlanta'
   }
 
   /**

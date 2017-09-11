@@ -47,6 +47,11 @@ class City {
       disease = this.color
     }
 
+    const medic = game.players.filter(player => player.is('medic'))[0]
+    if (medic && game.diseases[disease].cured && this.name === medic.position) {
+      return false
+    }
+
     if (game.diseases[disease].eradicated) {
       return false
     }

@@ -12,7 +12,6 @@ describe('Game class', () => {
     expect(game.diseases.red.cured).to.equal(0)
     expect(game.diseases.yellow.eradicated).to.equal(0)
     expect(game.players.length).to.equal(2)
-    expect(game.players[0].role.name).to.be.a('string')
     expect(game.decks).to.be.an('object')
     expect(game.decks.player.cards).to.be.an('array')
     expect(game.players[0].cards.length).to.equal(4)
@@ -21,6 +20,7 @@ describe('Game class', () => {
     expect(game.cities).to.be.an('array')
 
     game.start()
+    expect(game.players[0].role.name).to.be.a('string')
     expect(game.researchStations).to.equal(5)
   })
 
@@ -33,6 +33,7 @@ describe('Game class', () => {
   it('Research station is placed in Atlanta', () => {
     const game = new Game(4)
     game.start()
+    game.turn.player.role = {}
     expect(game.cities.pick('Atlanta').researchStation).to.equal(1)
     expect(game.map).to.be.a('string')
     expect(game.map).to.contain('&markers=icon:http%3A%2F%2Fi.imgur.com%2FB5DUeSF.png|33.748995,-84.387982')
@@ -41,6 +42,7 @@ describe('Game class', () => {
   it('Cannot build a research station if one already exists', () => {
     const game = new Game(4)
     game.start()
+    game.turn.player.role = {}
     expect(game.cities.pick('Atlanta').researchStation).to.equal(1)
     expect(game.buildResearchStation('Atlanta')).to.equal(false)
   })
@@ -48,6 +50,7 @@ describe('Game class', () => {
   it('Cannot build a research station if there are none left', () => {
     const game = new Game(4)
     game.start()
+    game.turn.player.role = {}
     expect(game.cities.pick('Atlanta').researchStation).to.equal(1)
     game.researchStations = 0
     expect(game.buildResearchStation('Atlanta')).to.equal(false)
@@ -78,12 +81,14 @@ describe('Game class', () => {
   it('Infects 9 cities at the start of a game', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.diseases.red.cubes + game.diseases.yellow.cubes + game.diseases.black.cubes + game.diseases.blue.cubes).to.equal(96 - (9 + 6 + 3))
   })
 
   it('Manually Move onto next player', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.player.name).to.equal('player1')
     game.newTurn()
     expect(game.turn.player.name).to.equal('player2')
@@ -94,6 +99,7 @@ describe('Game class', () => {
   it('Move onto draw and infect after 4 actions', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     expect(game.turn.player.name).to.equal('player1')
     game.turn.availableActions.drive[0].do()
     game.turn.availableActions.drive[0].do()
@@ -121,11 +127,12 @@ describe('Game class', () => {
     game.turn.availableActions.end.do()
 
     expect(game.turn.player.name).to.equal('player2')
-  })
+  }, 2)
 
   it('Player can manually discard a card', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     game.turn.player.cards[0].discard()
     expect(game.turn.player.cards.length).to.equal(3)
   })
@@ -133,6 +140,7 @@ describe('Game class', () => {
   it('Game ends when there are no player cards left', () => {
     const game = new Game(2)
     game.start()
+    game.turn.player.role = {}
     for (let i = 0; i < 48; i++) {
       game.decks.player.draw()
     }

@@ -20,7 +20,6 @@ class Game {
   constructor (players) {
     this.setUpGame()
     this.createPlayers(players)
-    this.pickRoles()
     this.dealCards()
   }
 
@@ -61,6 +60,7 @@ class Game {
     this.players.map(player => {
       this.move(player, 'Atlanta')
     })
+    this.pickRoles()
     this.newTurn()
   }
 

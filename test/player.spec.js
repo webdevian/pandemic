@@ -193,3 +193,76 @@ describe('Quarantine Specialist role', () => {
     expect(game.cities.pick('Paris').infection.blue).to.equal(2)
   })
 })
+
+describe('Medic role', () => {
+  it('Treats all cubes at once', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.role = {
+      name: 'Medic',
+      key: 'medic',
+      color: 'orange'
+    }
+
+    game.turn.currentPosition.infection.blue = 0
+
+    expect(game.turn.availableActions.treat).to.be.an('array')
+    expect(game.turn.availableActions.treat.length).to.equal(0)
+    game.turn.currentPosition.infection.blue = 3
+
+    const totalBlue = game.diseases.blue.cubes
+    expect(game.turn.availableActions.treat.length).to.equal(1)
+    expect(game.turn.availableActions.treat[0].label).to.equal('Remove 3 blue disease cube')
+    game.turn.availableActions.treat[0].do()
+    expect(game.diseases.blue.cubes).to.equal(totalBlue + 3)
+    expect(game.turn.actions).to.equal(3)
+    expect(game.turn.currentPosition.infection.blue).to.equal(0)
+  })
+
+  it('Cured diseases are treated instantly when moving to a city', () => {
+    const game = new Game(2)
+    game.newTurn()
+    game.turn.player.role = {
+      name: 'Medic',
+      key: 'medic',
+      color: 'orange'
+    }
+
+    game.turn.player.position = 'Santiago'
+
+    game.infect(game.decks.infection.find('Lima'), 1)
+    expect(game.cities.pick('Lima').infection.yellow).to.equal(1)
+
+    game.diseases.yellow.cured = 1
+
+    expect(game.turn.availableActions.drive.length).to.equal(1)
+    game.turn.availableActions.drive[0].do()
+
+    expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(0)
+  })
+
+  it('Prevents infection of cured disease in current city', () => {
+    const game = new Game(2)
+    game.newTurn()
+    game.turn.player.role = {
+      name: 'Medic',
+      key: 'medic',
+      color: 'orange'
+    }
+
+    game.move(game.turn.player, 'Kinshasa')
+    game.infect(game.decks.infection.find('Kinshasa'), 1)
+    expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(1)
+
+    game.diseases.yellow.cured = 1
+
+    game.decks.infection.discarded.slice().map(card => {
+      game.decks.infection.cards.unshift(card)
+    })
+
+    game.decks.infection.discarded = []
+
+    game.infect(game.decks.infection.find('Kinshasa'), 1)
+    expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(1)
+  })
+})
