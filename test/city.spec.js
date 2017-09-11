@@ -149,5 +149,5 @@ describe('City class', () => {
     } catch (e) {
       expect(e.message).to.equal('Game Over')
     }
-  }, 2)
+  }, 3)
 })

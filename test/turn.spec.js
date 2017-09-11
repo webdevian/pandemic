@@ -166,7 +166,9 @@ describe('Turn actions', () => {
   it('Allow players to share a card when both in that city', () => {
     let game = new Game(2)
     game.start()
-    game.turn.player.role = {}
+    game.players[0].role = {}
+    game.players[1].role = {}
+
     let city
 
     game.turn.player.cards.some((card, index) => {
@@ -195,7 +197,8 @@ describe('Turn actions', () => {
 
     game = new Game(2)
     game.start()
-    game.turn.player.role = {}
+    game.players[0].role = {}
+    game.players[1].role = {}
 
     game.turn.player.cards.some((card, index) => {
       if (card.type === 'city') {

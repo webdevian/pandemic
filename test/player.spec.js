@@ -276,6 +276,7 @@ describe('Researcher role', () => {
       key: 'researcher',
       color: 'brown'
     })
+    game.players[1].role = {}
 
     const cityCard = game.turn.player.cards.filter(card => card.type === 'city' && card.name !== 'Atlanta')[0]
 
