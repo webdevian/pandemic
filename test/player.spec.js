@@ -122,3 +122,74 @@ describe('Scientist role', () => {
     expect(game.turn.player.cards.length).to.equal(0)
   })
 })
+
+describe('Quarantine Specialist role', () => {
+  it('Prevents infection in current city', () => {
+    const game = new Game(2)
+    game.newTurn()
+    game.turn.player.role = {
+      name: 'Quarantine Specialist',
+      key: 'quarantine',
+      color: 'green'
+    }
+
+    game.infect(game.decks.infection.find('Kinshasa'), 1)
+    expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(1)
+    game.move(game.turn.player, 'Kinshasa')
+
+    game.decks.infection.discarded.slice().map(card => {
+      game.decks.infection.cards.unshift(card)
+    })
+
+    game.decks.infection.discarded = []
+
+    game.infect(game.decks.infection.find('Kinshasa'), 1)
+    expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(1)
+  })
+
+  it('Prevents infection in neighbouring city', () => {
+    const game = new Game(2)
+    game.newTurn()
+    game.turn.player.role = {
+      name: 'Quarantine Specialist',
+      key: 'quarantine',
+      color: 'green'
+    }
+
+    game.infect(game.decks.infection.find('Paris'), 1)
+    expect(game.cities.pick('Paris').infection.blue).to.equal(1)
+    game.move(game.turn.player, 'London')
+
+    game.decks.infection.discarded.slice().map(card => {
+      game.decks.infection.cards.unshift(card)
+    })
+
+    game.decks.infection.discarded = []
+
+    game.infect(game.decks.infection.find('Paris'), 1)
+    expect(game.cities.pick('Paris').infection.blue).to.equal(1)
+  })
+
+  it('Doesn\'t prevent if not in neighbouring city', () => {
+    const game = new Game(2)
+    game.newTurn()
+    game.turn.player.role = {
+      name: 'Quarantine Specialist',
+      key: 'quarantine',
+      color: 'green'
+    }
+
+    game.infect(game.decks.infection.find('Paris'), 1)
+    expect(game.cities.pick('Paris').infection.blue).to.equal(1)
+    game.move(game.turn.player, 'New York')
+
+    game.decks.infection.discarded.slice().map(card => {
+      game.decks.infection.cards.unshift(card)
+    })
+
+    game.decks.infection.discarded = []
+
+    game.infect(game.decks.infection.find('Paris'), 1)
+    expect(game.cities.pick('Paris').infection.blue).to.equal(2)
+  })
+})

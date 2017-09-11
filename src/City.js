@@ -35,6 +35,14 @@ class City {
    * @return {Object}                   Amount and disease, so game can deduct cubes from total
    */
   infect (game, amount = 1, disease, outbreakSources) {
+    const quarantineSpecialist = game.players.filter(player => player.is('quarantine'))[0]
+
+    if (quarantineSpecialist) {
+      if (this.name === quarantineSpecialist.position || (this.adjacent && this.adjacent[quarantineSpecialist.position])) {
+        return false
+      }
+    }
+
     if (!disease) {
       disease = this.color
     }
