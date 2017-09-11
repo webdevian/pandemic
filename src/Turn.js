@@ -59,10 +59,11 @@ class Turn {
   get availableActions () {
     let actions = {}
 
+    actions.events = this.getEvents()
+
     if (this.player.cards.length > 7) {
-      return {
-        discard: this.getDiscardOptions()
-      }
+      actions.discard = this.getDiscardOptions()
+      return actions
     }
 
     if (!this.actions) {
@@ -84,16 +85,14 @@ class Turn {
         }
       }
     } else {
-      actions = {
-        drive: this.getDriveOptions(),
-        directFlight: this.getDirectFlightOptions(),
-        charterFlight: this.getCharterFlightOptions(),
-        shuttleFlight: this.getShuttleFlightOptions(),
-        buildResearchStation: this.getBuildResearchStationOptions(),
-        treat: this.getTreatOptions(),
-        shareKnowledge: this.getShareKnowledgeOptions(),
-        discoverCure: this.getDiscoverCureOptions()
-      }
+      actions.drive = this.getDriveOptions()
+      actions.directFlight = this.getDirectFlightOptions()
+      actions.charterFlight = this.getCharterFlightOptions()
+      actions.shuttleFlight = this.getShuttleFlightOptions()
+      actions.buildResearchStation = this.getBuildResearchStationOptions()
+      actions.treat = this.getTreatOptions()
+      actions.shareKnowledge = this.getShareKnowledgeOptions()
+      actions.discoverCure = this.getDiscoverCureOptions()
     }
 
     return actions
@@ -139,6 +138,32 @@ class Turn {
    */
   end () {
     this.game.newTurn()
+  }
+
+  /**
+   * Get playable event cards at a given time
+   * @return {Array.Object}
+   */
+  getEvents () {
+    const options = []
+
+    this.player.cards.filter(card => card.type === 'event').map(card => {
+      options.push({
+        label: card.name,
+        do: () => this.doEvent(card)
+      })
+    })
+
+    return options
+  }
+
+  /**
+   * Complete the action on an event card
+   * @param  {Card} card Event card
+   */
+  doEvent (card) {
+    // TODO Set up actual events
+    card.discard()
   }
 
   /**

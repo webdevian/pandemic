@@ -484,7 +484,7 @@ describe('Turn actions', () => {
     }
 
     expect(game.turn.player.cards.length).to.equal(8)
-    expect(Object.keys(game.turn.availableActions).length).to.equal(1)
+    expect(Object.keys(game.turn.availableActions).length).to.be.below(3)
     expect(game.turn.availableActions.discard.length).to.equal(8)
     expect(game.turn.availableActions.discard[0].label).to.contain('Discard')
   })
@@ -531,5 +531,41 @@ describe('Turn actions', () => {
     expect(game.turn.player.cards.length).to.equal(7)
     expect(game.turn.availableActions.discard).to.be.an('undefined')
     expect(game.decks.player.discarded.length).to.equal(playerDiscardLength + 2)
+  })
+
+  it('Player has option for each event, at all stages of turn', () => {
+    const game = new Game(2)
+    game.start()
+
+    const events = game.decks.player.cards.filter(card => card.type === 'event')
+
+    game.turn.player.cards.length = 0
+
+    game.turn.player.pickUp(events[1])
+    game.turn.player.pickUp(events[0])
+
+    expect(game.turn.availableActions.events.length).to.equal(2)
+    expect(game.turn.availableActions.events[0].label).to.equal(game.turn.player.cards[0].name)
+    expect(game.turn.availableActions.events[1].label).to.equal(game.turn.player.cards[1].name)
+  })
+
+  it('When player plays an event, the card is discarded', () => {
+    const game = new Game(2)
+    game.start()
+
+    const events = game.decks.player.cards.filter(card => card.type === 'event')
+
+    game.turn.player.cards.length = 0
+
+    game.turn.player.pickUp(events[1])
+    game.turn.player.pickUp(events[0])
+
+    expect(game.turn.player.cards.length).to.equal(2)
+    expect(game.decks.player.discarded.length).to.equal(0)
+
+    game.turn.availableActions.events[0].do()
+
+    expect(game.turn.player.cards.length).to.equal(1)
+    expect(game.decks.player.discarded.length).to.equal(1)
   })
 })
