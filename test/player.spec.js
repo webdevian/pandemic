@@ -266,3 +266,28 @@ describe('Medic role', () => {
     expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(1)
   })
 })
+
+describe('Researcher role', () => {
+  it('Can give a card that doesn\' match current city', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.assignRole({
+      name: 'Researcher',
+      key: 'researcher',
+      color: 'brown'
+    })
+
+    const cityCard = game.turn.player.cards.filter(card => card.type === 'city' && card.name !== 'Atlanta')[0]
+
+    expect(game.turn.availableActions.shareKnowledge).to.be.an('array')
+    expect(game.turn.availableActions.shareKnowledge.length).to.be.above(1)
+    expect(game.turn.availableActions.shareKnowledge[0].label).to.equal('Give ' + cityCard.name + ' card to player2')
+    game.turn.availableActions.shareKnowledge[0].do()
+    game.turn.end()
+    game.turn.player.cards.length = 0
+
+    expect(game.turn.availableActions.shareKnowledge).to.be.an('array')
+    expect(game.turn.availableActions.shareKnowledge.length).to.be.above(1)
+    game.turn.availableActions.shareKnowledge[0].do()
+  })
+})

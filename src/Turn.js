@@ -397,12 +397,34 @@ class Turn {
           })
         }
 
+        if (player.is('researcher')) {
+          player.cards.filter(card => card.type === 'city').map(card => {
+            options.push({
+              label: 'Take ' + card.name + ' card from ' + player.name,
+              do: () => {
+                return this.doAction('shareKnowledge', {card, to: player})
+              }
+            })
+          })
+        }
+
         if (this.player.cards.filter(card => card.name === this.currentPosition.name).length) {
           options.push({
             label: 'Give ' + this.currentPosition.name + ' card to ' + player.name,
             do: () => {
               return this.doAction('shareKnowledge', {card: this.player.cards.filter(card => card.name === this.currentPosition.name)[0], to: player})
             }
+          })
+        }
+
+        if (this.player.is('researcher')) {
+          this.player.cards.filter(card => card.type === 'city').map(card => {
+            options.push({
+              label: 'Give ' + card.name + ' card to ' + player.name,
+              do: () => {
+                return this.doAction('shareKnowledge', {card, to: player})
+              }
+            })
           })
         }
       }
