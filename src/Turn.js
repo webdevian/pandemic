@@ -13,6 +13,8 @@ class Turn {
     this.game = game
     this.player = player
     this.actions = 4
+    this.drawn = 0
+    this.infected = 0
   }
 
   /**
@@ -55,6 +57,33 @@ class Turn {
    *                  Each option should have a label and a function to perform the action
    */
   get availableActions () {
+    if (!this.actions) {
+      if (!this.drawn) {
+        // Do draw and infect stage first
+        return {
+          draw: {
+            label: 'Draw 2 cards',
+            do: () => this.drawStage()
+          }
+        }
+      }
+      if (!this.infected) {
+        return {
+          infect: {
+            label: 'Infect cities',
+            do: () => this.infectStage()
+          }
+        }
+      }
+
+      return {
+        end: {
+          label: 'End Turn',
+          do: () => this.end()
+        }
+      }
+    }
+
     return {
       drive: this.getDriveOptions(),
       directFlight: this.getDirectFlightOptions(),
@@ -76,11 +105,6 @@ class Turn {
     this.actions--
 
     this[action](payload)
-
-    if (!this.actions) {
-      // Do draw and infect stage first
-      return this.drawStage()
-    }
   }
 
   /**
@@ -95,9 +119,9 @@ class Turn {
       this.player.pickUp(card)
     }
 
-    // TODO Check for maximum 7 cards
+    this.drawn = 1
 
-    return this.infectStage()
+    // TODO Check for maximum 7 cards
   }
 
   infectStage () {
@@ -105,7 +129,8 @@ class Turn {
       const infectCard = this.game.decks.infection.cards[0]
       this.game.infect(infectCard)
     }
-    this.end()
+
+    this.infected = 1
   }
 
   /**

@@ -462,8 +462,14 @@ describe('Turn actions', () => {
     game.turn.drawStage()
     expect(game.infectionLevel).to.equal(1)
     expect(game.infectionRate).to.equal(2)
+    expect(game.decks.infection.cards.length).to.equal(47)
+    expect(game.decks.infection.discarded.length).to.equal(1)
+
+    game.turn.infectStage()
+
     expect(game.decks.infection.cards.length).to.equal(45)
     expect(game.decks.infection.discarded.length).to.equal(3)
+
     const infectedCity = game.cities.pick(game.decks.infection.discarded[2].city.name)
     expect(infectedCity.infection[infectedCity.color]).to.equal(3)
   })

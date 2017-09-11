@@ -103,9 +103,22 @@ describe('Game class', () => {
     game.decks.player.cards.unshift(game.players[1].cards[0])
     game.decks.player.cards.unshift(game.players[1].cards[1])
     game.turn.availableActions.drive[0].do()
+
+    expect(game.turn.availableActions.draw).to.be.an('object')
+
+    game.turn.availableActions.draw.do()
+
     expect(game.players[0].cards.length).to.equal(6)
 
+    expect(game.turn.availableActions.infect).to.be.an('object')
+
+    game.turn.availableActions.infect.do()
+
     expect(game.diseases.red.cubes + game.diseases.yellow.cubes + game.diseases.black.cubes + game.diseases.blue.cubes).to.equal(96 - (9 + 6 + 3 + 2))
+
+    expect(game.turn.availableActions.end).to.be.an('object')
+
+    game.turn.availableActions.end.do()
 
     expect(game.turn.player.name).to.equal('player2')
   })
