@@ -86,5 +86,5 @@ describe('Contingency planner role', () => {
     expect(game.turn.availableActions.events.length).to.equal(1)
     expect(game.turn.player.role.savedCard).to.equal(null)
     expect(game.turn.actions).to.equal(3)
-  })
+  }, 2)
 })

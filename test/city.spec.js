@@ -88,7 +88,7 @@ describe('City class', () => {
     expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(1)
 
     expect(game.outbreakCount).to.equal(1)
-  })
+  }, 2)
 
   it('Chain Outbreak spreads infection to neighbouring cities', () => {
     const game = new Game(2)
@@ -108,7 +108,7 @@ describe('City class', () => {
     expect(game.cities.pick('Kinshasa').infection.yellow).to.equal(2)
 
     expect(game.outbreakCount).to.equal(2)
-  })
+  }, 2)
 
   it('Chain Outbreak spreads infection to neighbouring cities', () => {
     const game = new Game(2)
@@ -125,7 +125,7 @@ describe('City class', () => {
 
     game.infect(game.decks.infection.find('Kinshasa'), 3)
     expect(game.outbreakCount).to.equal(5)
-  })
+  }, 2)
 
   it('Game over on 8th Outbreak', () => {
     const game = new Game(2)
@@ -149,5 +149,5 @@ describe('City class', () => {
     } catch (e) {
       expect(e.message).to.equal('Game Over')
     }
-  })
+  }, 2)
 })

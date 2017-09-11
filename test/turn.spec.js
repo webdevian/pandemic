@@ -104,7 +104,7 @@ describe('Turn actions', () => {
     expect(game.researchStations).to.equal(4)
     expect(game.turn.player.cards.length).to.equal(3)
     expect(game.turn.actions).to.equal(3)
-  })
+  }, 2)
 
   it('Don\'t allow player to build a reaserch station in current city if one already exists', () => {
     const game = new Game(2)
@@ -222,7 +222,7 @@ describe('Turn actions', () => {
     expect(game.players[1].cards.length).to.equal(4)
   })
 
-  it('Allow player to discover cure if they have 5 cards of the same colour and are at a research station', () => {
+  it('Allow player to discover cure if they have 5 cards of the same colour', () => {
     const game = new Game(2)
     game.start()
     game.turn.player.role = {}
@@ -250,7 +250,7 @@ describe('Turn actions', () => {
     expect(game.turn.player.cards.length).to.equal(0)
   })
 
-  it('Allow player to discover cure if they have 6 cards of the same colour and are at a research station', () => {
+  it('Allow player to discover cure if they have 6 cards of the same colour', () => {
     const game = new Game(2)
     game.start()
     game.turn.player.role = {}
@@ -278,7 +278,7 @@ describe('Turn actions', () => {
     expect(game.turn.player.cards.length).to.equal(1)
   })
 
-  it('Allow player to discover cure if they have 7 cards of the same colour and are at a research station', () => {
+  it('Allow player to discover cure if they have 7 cards of the same colour', () => {
     const game = new Game(2)
     game.start()
     game.turn.player.role = {}
@@ -568,7 +568,7 @@ describe('Turn actions', () => {
     expect(game.turn.availableActions.events.length).to.equal(2)
     expect(game.turn.availableActions.events[0].label).to.equal(game.turn.player.cards[0].name)
     expect(game.turn.availableActions.events[1].label).to.equal(game.turn.player.cards[1].name)
-  })
+  }, 2)
 
   it('When player plays an event, the card is discarded', () => {
     const game = new Game(2)
@@ -589,5 +589,5 @@ describe('Turn actions', () => {
 
     expect(game.turn.player.cards.length).to.equal(1)
     expect(game.decks.player.discarded.length).to.equal(1)
-  })
+  }, 2)
 })
