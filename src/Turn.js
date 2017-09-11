@@ -57,6 +57,12 @@ class Turn {
    *                  Each option should have a label and a function to perform the action
    */
   get availableActions () {
+    if (this.player.cards.length > 7) {
+      return {
+        discard: this.getDiscardOptions()
+      }
+    }
+
     if (!this.actions) {
       if (!this.drawn) {
         // Do draw and infect stage first
@@ -120,8 +126,6 @@ class Turn {
     }
 
     this.drawn = 1
-
-    // TODO Check for maximum 7 cards
   }
 
   infectStage () {
@@ -412,6 +416,24 @@ class Turn {
     this.game.diseases[disease].cured = 1
     this.game.checkEradicated(disease)
     cards.map(card => card.discard())
+  }
+
+  /**
+   * Get options for discarding cards from hand
+   * @return {Array.Object}
+   */
+  getDiscardOptions () {
+    const options = []
+    this.player.cards.map(card => {
+      options.push({
+        label: 'Discard ' + card.name,
+        do: () => {
+          card.discard()
+        }
+      })
+    })
+
+    return options
   }
 
   /**

@@ -473,4 +473,63 @@ describe('Turn actions', () => {
     const infectedCity = game.cities.pick(game.decks.infection.discarded[2].city.name)
     expect(infectedCity.infection[infectedCity.color]).to.equal(3)
   })
+
+  it('If a player has more than 7 cards, the only action is to discard', () => {
+    const game = new Game(2)
+    game.start()
+
+    for (let i = 0; i < 4; i++) {
+      const card = game.decks.player.draw()
+      game.turn.player.pickUp(card)
+    }
+
+    expect(game.turn.player.cards.length).to.equal(8)
+    expect(Object.keys(game.turn.availableActions).length).to.equal(1)
+    expect(game.turn.availableActions.discard.length).to.equal(8)
+    expect(game.turn.availableActions.discard[0].label).to.contain('Discard')
+  })
+
+  it('Player can discard a card when they have more than 7 cards', () => {
+    const game = new Game(2)
+    game.start()
+
+    for (let i = 0; i < 4; i++) {
+      const card = game.decks.player.draw()
+      game.turn.player.pickUp(card)
+    }
+
+    const playerDiscardLength = game.decks.player.discarded.length
+    expect(game.turn.player.cards.length).to.equal(8)
+
+    game.turn.availableActions.discard[0].do()
+
+    expect(game.turn.player.cards.length).to.equal(7)
+    expect(game.decks.player.discarded.length).to.equal(playerDiscardLength + 1)
+  })
+
+  it('Player can discard a card when they have more than 8 cards', () => {
+    const game = new Game(2)
+    game.start()
+
+    for (let i = 0; i < 5; i++) {
+      const card = game.decks.player.draw()
+      game.turn.player.pickUp(card)
+    }
+
+    const playerDiscardLength = game.decks.player.discarded.length
+    expect(game.turn.player.cards.length).to.equal(9)
+    expect(game.turn.availableActions.discard.length).to.equal(9)
+
+    game.turn.availableActions.discard[0].do()
+
+    expect(game.turn.player.cards.length).to.equal(8)
+    expect(game.turn.availableActions.discard.length).to.equal(8)
+    expect(game.decks.player.discarded.length).to.equal(playerDiscardLength + 1)
+
+    game.turn.availableActions.discard[0].do()
+
+    expect(game.turn.player.cards.length).to.equal(7)
+    expect(game.turn.availableActions.discard).to.be.an('undefined')
+    expect(game.decks.player.discarded.length).to.equal(playerDiscardLength + 2)
+  })
 })
