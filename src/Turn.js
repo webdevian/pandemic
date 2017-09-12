@@ -27,15 +27,6 @@ class Turn {
   }
 
   /**
-   * Is the player not in the city of a given given city card
-   * @param  {Card}  card
-   * @return {Boolean}
-   */
-  notInCity (card) {
-    return card.type === 'city' && card.name !== this.currentPosition.name
-  }
-
-  /**
    * City the active player is in
    * @return {City}
    */
@@ -164,6 +155,10 @@ class Turn {
       return this.getOperationsActions()
     }
 
+    if (this.player.is('dispatcher')) {
+      return this.getDispatcherActions()
+    }
+
     return {}
   }
 
@@ -183,14 +178,15 @@ class Turn {
    * Get options for the drive action based on adjacent cities
    * @return {Array.Object}
    */
-  getDriveOptions () {
+  getDriveOptions (player) {
+    player = player || this.player
     const options = []
 
-    Object.keys(this.currentPosition.adjacent).map(city => {
+    Object.keys(this.game.cities.pick(player.position).adjacent).map(city => {
       options.push({
         label: 'Drive to ' + city,
         do: () => {
-          return this.doAction('drive', city)
+          return this.doAction('drive', {city, player})
         }
       })
     })
@@ -202,23 +198,25 @@ class Turn {
    * Drive action
    * @param  {String} city City to drive to
    */
-  drive (city) {
-    this.game.move(this.player, city)
+  drive ({city, player}) {
+    this.game.move(player, city)
   }
 
   /**
    * Get options for flying direct
    * @return {Array.Object}
    */
-  getDirectFlightOptions () {
+  getDirectFlightOptions (player, cards) {
+    player = player || this.player
+    cards = cards || this.player.cards
     const options = []
 
-    this.player.cards.map(card => {
-      if (this.notInCity(card)) {
+    cards.map(card => {
+      if (this.game.cities.pick(player.position).name !== card.name && card.city) {
         options.push({
           label: 'Fly to ' + card.city.name,
           do: () => {
-            return this.doAction('directFlight', card)
+            return this.doAction('directFlight', {card, player})
           }
         })
       }
@@ -231,8 +229,8 @@ class Turn {
    * Fly to a specific city and discard the card
    * @param  {Card} card
    */
-  directFlight (card) {
-    this.game.move(this.player, card.city.name)
+  directFlight ({card, player}) {
+    this.game.move(player, card.city.name)
     card.discard()
   }
 
@@ -240,15 +238,17 @@ class Turn {
    * Get options for chartering flight to anywhere
    * @return {Array.Object}
    */
-  getCharterFlightOptions () {
+  getCharterFlightOptions (player, cards) {
+    player = player || this.player
+    cards = cards || this.player.cards
     const options = []
-    this.player.cards.map(card => {
-      if (this.isInCity(card)) {
+    cards.map(card => {
+      if (this.game.cities.pick(player.position).name === card.name && card.city) {
         this.game.cities.map(city => {
           options.push({
             label: 'Charter flight to ' + city.name,
             do: () => {
-              return this.doAction('charterFlight', {card, city})
+              return this.doAction('charterFlight', {card, city, player})
             }
           })
         })
@@ -263,8 +263,8 @@ class Turn {
    * @param  {Card} card
    * @param  {City} city
    */
-  charterFlight ({card, city}) {
-    this.game.move(this.player, city.name)
+  charterFlight ({card, city, player}) {
+    this.game.move(player, city.name)
     card.discard()
   }
 
@@ -272,14 +272,17 @@ class Turn {
    * Options for travelling to another research station
    * @return {Array.Object}
    */
-  getShuttleFlightOptions () {
+  getShuttleFlightOptions (player, cards) {
+    player = player || this.player
+    cards = cards || this.player.cards
     const options = []
-    if (this.currentPosition.researchStation) {
+
+    if (this.game.cities.pick(player.position).researchStation) {
       this.game.cities.filter(city => city.researchStation && this.currentPosition.name !== city.name).map(city => {
         options.push({
           label: 'Shuttle flight to ' + city.name,
           do: () => {
-            return this.doAction('shuttleFlight', city)
+            return this.doAction('shuttleFlight', {city, player})
           }
         })
       })
@@ -292,8 +295,8 @@ class Turn {
    * Move between research stations
    * @param  {City} city
    */
-  shuttleFlight (city) {
-    this.game.move(this.player, city.name)
+  shuttleFlight ({city, player}) {
+    this.game.move(player, city.name)
   }
 
   /**
@@ -578,6 +581,52 @@ class Turn {
         })
       })
     }
+
+    return actions
+  }
+
+  /**
+   * Actions for dispatcher role
+   * @return {Object}
+   */
+  getDispatcherActions () {
+    const actions = {}
+
+    actions.dispatcher = {}
+
+    actions.dispatcher.dispatch = []
+
+    this.game.players.map(player => {
+      const dispatchActions = []
+
+      this.game.players.filter(otherPlayer => otherPlayer.name !== player.name && otherPlayer.position !== player.position).map(otherPlayer => {
+        dispatchActions.push({
+          label: 'Move ' + player.name + ' to ' + otherPlayer.position,
+          do: () => {
+            this.actions--
+            this.game.move(player, otherPlayer.position)
+          }
+        })
+      })
+
+      actions.dispatcher.dispatch.push({
+        label: 'Move ' + player.name,
+        actions: dispatchActions
+      })
+    })
+
+    actions.dispatcher.move = []
+    this.game.players.filter(player => player.name !== this.player.name).map(player => {
+      actions.dispatcher.move.push({
+        label: 'Move ' + player.name,
+        actions: {
+          drive: this.getDriveOptions(player),
+          directFlight: this.getDirectFlightOptions(player, this.player.cards),
+          charterFlight: this.getCharterFlightOptions(player, this.player.cards),
+          shuttleFlight: this.getShuttleFlightOptions(player)
+        }
+      })
+    })
 
     return actions
   }

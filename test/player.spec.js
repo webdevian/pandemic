@@ -370,3 +370,136 @@ describe('Operations Expert role', () => {
     expect(game.turn.player.cards.length).to.equal(3)
   })
 })
+
+describe('Dispatcher role', () => {
+  it('Can move any player to a city with another pawn in', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.assignRole({
+      name: 'Dispatcher',
+      key: 'dispatcher',
+      color: 'magenta'
+    })
+    game.players[1].role = {}
+    game.players[0].position = 'Mexico City'
+    game.players[1].position = 'Khartoum'
+
+    expect(game.turn.availableActions.dispatcher).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.dispatch).to.be.an('array')
+    expect(game.turn.availableActions.dispatcher.dispatch[0].actions).to.be.an('array')
+    expect(game.turn.availableActions.dispatcher.dispatch[0].label).to.equal('Move player1')
+    expect(game.turn.availableActions.dispatcher.dispatch[0].actions.length).to.equal(1)
+    expect(game.turn.availableActions.dispatcher.dispatch[1].actions.length).to.equal(1)
+    expect(game.turn.availableActions.dispatcher.dispatch[1].actions[0].label).to.equal('Move player2 to Mexico City')
+
+    game.turn.availableActions.dispatcher.dispatch[1].actions[0].do()
+    expect(game.players[1].position).to.equal('Mexico City')
+    expect(game.turn.actions).to.equal(3)
+  })
+
+  it('Can drive any player to an adjacent city', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.assignRole({
+      name: 'Dispatcher',
+      key: 'dispatcher',
+      color: 'magenta'
+    })
+    game.players[1].role = {}
+    game.players[1].position = 'Santiago'
+
+    expect(game.turn.availableActions.dispatcher).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.move).to.be.an('array')
+    expect(game.turn.availableActions.dispatcher.move.length).to.equal(1)
+    expect(game.turn.availableActions.dispatcher.move[0].actions).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.move[0].label).to.equal('Move player2')
+
+    game.turn.availableActions.dispatcher.move[0].actions.drive[0].do()
+    expect(game.players[1].position).to.equal('Lima')
+    expect(game.turn.player.cards.length).to.equal(4)
+    expect(game.turn.actions).to.equal(3)
+  })
+
+  it('Can fly any player directly to a city with that city card', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.assignRole({
+      name: 'Dispatcher',
+      key: 'dispatcher',
+      color: 'magenta'
+    })
+    game.players[1].role = {}
+
+    let city
+    game.turn.player.cards.some((card, index) => {
+      if (card.type === 'city' && card.name !== 'Atlanta') {
+        city = card.name
+        return true
+      }
+    })
+
+    expect(game.turn.availableActions.dispatcher).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.move).to.be.an('array')
+    expect(game.turn.availableActions.dispatcher.move.length).to.equal(1)
+    expect(game.turn.availableActions.dispatcher.move[0].actions).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.move[0].label).to.equal('Move player2')
+    game.turn.availableActions.dispatcher.move[0].actions.directFlight[0].do()
+    expect(game.players[1].position).to.equal(city)
+    expect(game.turn.player.cards.length).to.equal(3)
+    expect(game.turn.actions).to.equal(3)
+  })
+
+  it('Can charter fly any player from a city to anywhere, with that city card', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.assignRole({
+      name: 'Dispatcher',
+      key: 'dispatcher',
+      color: 'magenta'
+    })
+    game.players[1].role = {}
+
+    let city
+    game.turn.player.cards.some((card, index) => {
+      if (card.type === 'city' && card.name !== 'Atlanta') {
+        city = card.name
+        return true
+      }
+    })
+
+    game.players[1].position = city
+
+    expect(game.turn.availableActions.dispatcher).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.move).to.be.an('array')
+    expect(game.turn.availableActions.dispatcher.move.length).to.equal(1)
+    expect(game.turn.availableActions.dispatcher.move[0].actions).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.move[0].label).to.equal('Move player2')
+    game.turn.availableActions.dispatcher.move[0].actions.charterFlight[0].do()
+    expect(game.players[1].position).to.not.equal(city)
+    expect(game.turn.player.cards.length).to.equal(3)
+    expect(game.turn.actions).to.equal(3)
+  })
+
+  it('Can shuttle fly any player between research stations', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.assignRole({
+      name: 'Dispatcher',
+      key: 'dispatcher',
+      color: 'magenta'
+    })
+    game.players[1].role = {}
+
+    expect(game.turn.availableActions.dispatcher).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.move).to.be.an('array')
+    expect(game.turn.availableActions.dispatcher.move.length).to.equal(1)
+    expect(game.turn.availableActions.dispatcher.move[0].actions).to.be.an('object')
+    expect(game.turn.availableActions.dispatcher.move[0].actions.shuttleFlight.length).to.equal(0)
+    game.buildResearchStation('Khartoum')
+    expect(game.turn.availableActions.dispatcher.move[0].actions.shuttleFlight.length).to.equal(1)
+    game.turn.availableActions.dispatcher.move[0].actions.shuttleFlight[0].do()
+    expect(game.players[1].position).to.equal('Khartoum')
+    expect(game.turn.player.cards.length).to.equal(4)
+    expect(game.turn.actions).to.equal(3)
+  })
+})
