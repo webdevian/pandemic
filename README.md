@@ -1,4 +1,5 @@
 # Pandemic board game emulation
+[![Build Status](https://travis-ci.org/webdevian/pandemic.svg?branch=master)](https://travis-ci.org/webdevian/pandemic)
 
 Javascript implementation of the board game Pandemic
 
