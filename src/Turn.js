@@ -156,36 +156,11 @@ class Turn {
    * @return {Object}
    */
   getRoleActions () {
-    const actions = {}
-
     if (this.player.is('contingency')) {
-      actions.contingency = []
-
-      this.game.decks.player.discarded.filter(card => card.type === 'event').map(card => {
-        actions.contingency.push({
-          label: 'Pick up ' + card.name,
-          do: () => {
-            this.actions--
-            this.player.role.savedCard = card
-            this.player.role.savedCard.hand = null
-            this.game.decks.player.discarded.splice(this.game.decks.player.discarded.indexOf(card), 1)
-          }
-        })
-      })
-
-      if (this.player.role.savedCard) {
-        const card = this.player.role.savedCard
-        actions.savedCard = {
-          label: 'Saved Card: ' + card.name,
-          do: () => {
-            this.doEvent(card, false)
-            this.player.role.savedCard = null
-          }
-        }
-      }
+      return this.getContingencyActions()
     }
 
-    return actions
+    return {}
   }
 
   /**
@@ -518,6 +493,41 @@ class Turn {
     })
 
     return options
+  }
+
+  /**
+   * Actions for contingency role
+   * @return {Object}
+   */
+  getContingencyActions () {
+    const actions = {}
+
+    actions.contingency = []
+
+    this.game.decks.player.discarded.filter(card => card.type === 'event').map(card => {
+      actions.contingency.push({
+        label: 'Pick up ' + card.name,
+        do: () => {
+          this.actions--
+          this.player.role.savedCard = card
+          this.player.role.savedCard.hand = null
+          this.game.decks.player.discarded.splice(this.game.decks.player.discarded.indexOf(card), 1)
+        }
+      })
+    })
+
+    if (this.player.role.savedCard) {
+      const card = this.player.role.savedCard
+      actions.savedCard = {
+        label: 'Saved Card: ' + card.name,
+        do: () => {
+          this.doEvent(card, false)
+          this.player.role.savedCard = null
+        }
+      }
+    }
+
+    return actions
   }
 
   /**
