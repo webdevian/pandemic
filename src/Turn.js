@@ -641,6 +641,11 @@ class Turn {
     return actions
   }
 
+  /**
+   * Get Actions(s) for the Resilient Population event
+   * @param  {Card} eventCard Event card to play
+   * @return {Object}
+   */
   getResilientOptions (eventCard) {
     const actions = []
     // TODO Allow during epidemic
@@ -659,6 +664,10 @@ class Turn {
     }
   }
 
+  /**
+   * Remove a card from the infection discard pile
+   * @param  {String} card Name of the card to remove
+   */
   resilientEvent ({card}) {
     this.game.decks.infection.discarded.map((infectionCard, i) => {
       if (infectionCard.name === card) {
@@ -667,6 +676,11 @@ class Turn {
     })
   }
 
+  /**
+   * Get Actions(s) for the One Quiet Night event
+   * @param  {Card} eventCard Event card to play
+   * @return {Object}
+   */
   getOqnOptions (eventCard) {
     return {
       label: 'One Quiet Night',
@@ -676,10 +690,18 @@ class Turn {
     }
   }
 
+  /**
+   * Skip the infection step for this turn
+   */
   oqnEvent () {
     this.skipInfect = 1
   }
 
+  /**
+   * Get Actions(s) for the Forecast event
+   * @param  {Card} eventCard Event card to play
+   * @return {Object}
+   */
   getForecastOptions (eventCard) {
     return {
       label: 'Forecast',
@@ -689,10 +711,18 @@ class Turn {
     }
   }
 
+  /**
+   * Show player top 6 infection deck cards then re-arrange them
+   */
   forecastEvent () {
     // Eeeesh :/
   }
 
+  /**
+   * Get Actions(s) for the Airlift event
+   * @param  {Card} eventCard Event card to play
+   * @return {Object}
+   */
   getAirliftOptions (eventCard) {
     const actions = []
     this.game.players.map(player => {
@@ -720,10 +750,20 @@ class Turn {
     }
   }
 
+  /**
+   * Move any player to any city
+   * @param  {Player} player Player to move
+   * @param  {String} city   Name of city to move them to
+   */
   airliftEvent ({player, city}) {
     this.game.move(player, city)
   }
 
+  /**
+   * Get Actions(s) for the Government Grant event
+   * @param  {Card} eventCard Event card to play
+   * @return {Object}
+   */
   getGgOptions (eventCard) {
     const actions = []
     this.game.cities.map(city => {
@@ -743,6 +783,10 @@ class Turn {
     }
   }
 
+  /**
+   * Build a research station in any city
+   * @param  {String} city name of the city
+   */
   ggEvent ({city}) {
     this.game.buildResearchStation(city)
   }
