@@ -59,7 +59,13 @@ describe('Contingency planner role', () => {
     expect(game.turn.availableActions.contingency.length).to.equal(0)
     expect(game.turn.availableActions.events.length).to.equal(2)
 
-    game.turn.availableActions.events[0].do()
+    if (game.turn.availableActions.events[0].do) {
+      game.turn.availableActions.events[0].do()
+    } else if (game.turn.availableActions.events[0].actions[0].do) {
+      game.turn.availableActions.events[0].actions[0].do()
+    } else {
+      game.turn.availableActions.events[0].actions[0].actions[0].do()
+    }
 
     expect(game.turn.player.cards.length).to.equal(1)
     expect(game.decks.player.discarded.length).to.equal(1)
@@ -75,10 +81,17 @@ describe('Contingency planner role', () => {
     expect(game.turn.player.cards.length).to.equal(1)
     expect(game.decks.player.discarded.length).to.equal(0)
     expect(game.turn.availableActions.contingency.length).to.equal(0)
-    expect(game.turn.availableActions.events.length).to.equal(1)
-    expect(game.turn.availableActions.savedCard).to.be.an('object')
+    expect(game.turn.availableActions.events.length).to.equal(2)
+    expect(game.turn.availableActions.events[0].label).to.contain('Saved Card:')
 
-    game.turn.availableActions.savedCard.do()
+    if (game.turn.availableActions.events[0].do) {
+      game.turn.availableActions.events[0].do()
+    } else if (game.turn.availableActions.events[0].actions[0].do) {
+      game.turn.availableActions.events[0].actions[0].do()
+    } else {
+      game.turn.availableActions.events[0].actions[0].actions[0].do()
+    }
+
     expect(game.turn.player.cards.length).to.equal(1)
     expect(game.decks.player.discarded.length).to.equal(0)
     expect(game.turn.availableActions.events.length).to.equal(1)

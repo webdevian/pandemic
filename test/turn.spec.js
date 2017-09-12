@@ -592,7 +592,13 @@ describe('Turn actions', () => {
     expect(game.turn.player.cards.length).to.equal(2)
     expect(game.decks.player.discarded.length).to.equal(0)
 
-    game.turn.availableActions.events[0].do()
+    if (game.turn.availableActions.events[0].do) {
+      game.turn.availableActions.events[0].do()
+    } else if (game.turn.availableActions.events[0].actions[0].do) {
+      game.turn.availableActions.events[0].actions[0].do()
+    } else {
+      game.turn.availableActions.events[0].actions[0].actions[0].do()
+    }
 
     expect(game.turn.player.cards.length).to.equal(1)
     expect(game.decks.player.discarded.length).to.equal(1)

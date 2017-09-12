@@ -42,7 +42,7 @@ class Turn {
   get availableActions () {
     let actions = {}
 
-    actions.events = this.getEvents()
+    actions.events = this.getEvents(this.player)
 
     if (this.player.cards.length > 7) {
       actions.discard = this.getDiscardOptions()
@@ -56,7 +56,7 @@ class Turn {
           label: 'Draw 2 cards',
           do: () => this.drawStage()
         }
-      } else if (!this.infected) {
+      } else if (!this.infected && !this.skipInfect) {
         actions.infect = {
           label: 'Infect cities',
           do: () => this.infectStage()
@@ -127,16 +127,22 @@ class Turn {
 
   /**
    * Get playable event cards at a given time
+   * @param {Player} player Player to play event card
    * @return {Array.Object}
    */
-  getEvents () {
+  getEvents (player) {
     const events = []
 
-    this.player.cards.filter(card => card.type === 'event').map(card => {
-      events.push({
-        label: card.name,
-        do: () => this.doEvent(card)
-      })
+    if (this.player.role.savedCard) {
+      const card = this.player.role.savedCard
+      const options = this['get' + card.key.charAt(0).toUpperCase() + card.key.slice(1) + 'Options'](card)
+
+      options.label = 'Saved Card: ' + options.label
+      events.push(options)
+    }
+
+    player.cards.filter(card => card.type === 'event').map(card => {
+      events.push(this['get' + card.key.charAt(0).toUpperCase() + card.key.slice(1) + 'Options'](card))
     })
 
     return events
@@ -170,8 +176,11 @@ class Turn {
    */
   doEvent (card, payload, discard = true) {
     // TODO Set up actual events
+    this[card.key + 'Event'](payload)
 
-    if (discard) {
+    if (card.isSaved) {
+      this.player.role.savedCard = null
+    } else {
       card.discard()
     }
   }
@@ -541,23 +550,13 @@ class Turn {
         label: 'Pick up ' + card.name,
         do: () => {
           this.actions--
+          card.hand = null
+          card.isSaved = true
           this.player.role.savedCard = card
-          this.player.role.savedCard.hand = null
           this.game.decks.player.discarded.splice(this.game.decks.player.discarded.indexOf(card), 1)
         }
       })
     })
-
-    if (this.player.role.savedCard) {
-      const card = this.player.role.savedCard
-      actions.savedCard = {
-        label: 'Saved Card: ' + card.name,
-        do: () => {
-          this.doEvent(card, {}, false)
-          this.player.role.savedCard = null
-        }
-      }
-    }
 
     return actions
   }
@@ -640,6 +639,112 @@ class Turn {
     })
 
     return actions
+  }
+
+  getResilientOptions (eventCard) {
+    const actions = []
+    // TODO Allow during epidemic
+    this.game.decks.infection.discarded.map(card => {
+      actions.push({
+        label: 'Resilient Population',
+        do: () => {
+          this.doEvent(eventCard, {card: card.name})
+        }
+      })
+    })
+
+    return {
+      label: eventCard.name,
+      actions
+    }
+  }
+
+  resilientEvent ({card}) {
+    this.game.decks.infection.discarded.map((infectionCard, i) => {
+      if (infectionCard.name === card) {
+        this.game.decks.infection.discarded.splice(i, 1)
+      }
+    })
+  }
+
+  getOqnOptions (eventCard) {
+    return {
+      label: 'One Quiet Night',
+      do: () => {
+        this.doEvent(eventCard)
+      }
+    }
+  }
+
+  oqnEvent () {
+    this.skipInfect = 1
+  }
+
+  getForecastOptions (eventCard) {
+    return {
+      label: 'Forecast',
+      do: () => {
+        this.doEvent(eventCard)
+      }
+    }
+  }
+
+  forecastEvent () {
+    // Eeeesh :/
+  }
+
+  getAirliftOptions (eventCard) {
+    const actions = []
+    this.game.players.map(player => {
+      const playerActions = []
+      this.game.cities.map(city => {
+        if (city.name !== player.position) {
+          playerActions.push({
+            label: 'Move ' + player.name + ' to ' + city.name,
+            do: () => {
+              this.doEvent(eventCard, {player, city: city.name})
+            }
+          })
+        }
+      })
+
+      actions.push({
+        label: 'Move ' + player.name,
+        actions: playerActions
+      })
+    })
+
+    return {
+      label: 'Airlift',
+      actions
+    }
+  }
+
+  airliftEvent ({player, city}) {
+    this.game.move(player, city)
+  }
+
+  getGgOptions (eventCard) {
+    const actions = []
+    this.game.cities.map(city => {
+      if (!city.researchStation) {
+        actions.push({
+          label: 'Build Research Station in ' + city.name,
+          do: () => {
+            this.doEvent(eventCard, {city: city.name})
+          }
+        })
+      }
+    })
+
+    return {
+      label: 'Government Grant',
+      actions
+    }
+  }
+
+  ggEvent ({city}) {
+    this.game.buildResearchStation(city)
   }
 
   /**
