@@ -75,9 +75,10 @@ describe('Turn actions', () => {
     const game = new Game(2)
     game.start()
     game.turn.player.role = {}
+    expect(game.turn.availableActions.shuttleFlight).to.be.an('array')
     expect(game.turn.availableActions.shuttleFlight.length).to.equal(0)
     game.buildResearchStation('Khartoum')
-    expect(game.turn.availableActions.shuttleFlight).to.be.an('array')
+    expect(game.turn.availableActions.shuttleFlight.length).to.be.above(0)
 
     game.turn.availableActions.shuttleFlight[0].do()
     expect(game.turn.player.position).to.equal('Khartoum')

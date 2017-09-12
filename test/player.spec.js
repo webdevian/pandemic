@@ -292,3 +292,81 @@ describe('Researcher role', () => {
     game.turn.availableActions.shareKnowledge[0].do()
   })
 })
+
+describe('Operations Expert role', () => {
+  it('Can build a research station in current city without using card', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.role = {
+      name: 'Operations Expert',
+      key: 'operations',
+      color: 'teal'
+    }
+
+    let city
+    game.turn.player.cards.some((card, index) => {
+      if (card.type === 'city') {
+        city = card.name
+        return true
+      }
+    })
+    game.turn.player.position = city
+
+    expect(game.turn.availableActions.buildResearchStation).to.be.an('array')
+    expect(game.turn.availableActions.buildResearchStation.length).to.equal(1)
+    game.turn.availableActions.buildResearchStation[0].do()
+    expect(game.turn.currentPosition.researchStation).to.equal(1)
+    expect(game.researchStations).to.equal(4)
+    expect(game.turn.player.cards.length).to.equal(4)
+    expect(game.turn.actions).to.equal(3)
+  })
+
+  it('Can build a research station in current city without holding card', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.role = {
+      name: 'Operations Expert',
+      key: 'operations',
+      color: 'teal'
+    }
+
+    game.turn.player.cards.length = 0
+
+    game.turn.player.position = 'Tokyo'
+
+    expect(game.turn.availableActions.buildResearchStation).to.be.an('array')
+    expect(game.turn.availableActions.buildResearchStation.length).to.equal(1)
+    game.turn.availableActions.buildResearchStation[0].do()
+    expect(game.turn.currentPosition.researchStation).to.equal(1)
+    expect(game.researchStations).to.equal(4)
+    expect(game.turn.actions).to.equal(3)
+  })
+
+  it('Can fly to any city from a research station', () => {
+    const game = new Game(2)
+    game.start()
+    game.turn.player.role = {
+      name: 'Operations Expert',
+      key: 'operations',
+      color: 'teal'
+    }
+
+    game.turn.player.position = 'Kinshasa'
+
+    expect(game.turn.availableActions.shuttleFlight).to.be.an('array')
+    expect(game.turn.availableActions.operations).to.be.an('array')
+    expect(game.turn.availableActions.operations.length).to.equal(0)
+    expect(game.turn.availableActions.shuttleFlight.length).to.equal(0)
+
+    game.buildResearchStation('Khartoum')
+    game.turn.player.position = 'Khartoum'
+
+    expect(game.turn.availableActions.shuttleFlight.length).to.equal(1)
+    expect(game.turn.availableActions.shuttleFlight.length).to.be.above(0)
+
+    game.turn.availableActions.operations[0].actions[0].do()
+    expect(game.turn.player.position).to.not.equal('Khartoum')
+    expect(game.turn.actions).to.equal(3)
+    expect(game.turn.player.cards.length).to.equal(3)
+  })
+})

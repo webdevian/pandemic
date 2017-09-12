@@ -160,6 +160,10 @@ class Turn {
       return this.getContingencyActions()
     }
 
+    if (this.player.is('operations')) {
+      return this.getOperationsActions()
+    }
+
     return {}
   }
 
@@ -309,6 +313,17 @@ class Turn {
       }
     })
 
+    if (!options.length && this.player.is('operations')) {
+      const city = this.currentPosition
+
+      options.push({
+        label: 'Build Research Station in ' + city.name,
+        do: () => {
+          return this.doAction('buildResearchStation', { name: city.name })
+        }
+      })
+    }
+
     return options
   }
 
@@ -318,7 +333,10 @@ class Turn {
    */
   buildResearchStation (card) {
     this.game.buildResearchStation(card.name)
-    card.discard()
+
+    if (!this.player.is('operations')) {
+      card.discard()
+    }
   }
 
   /**
@@ -525,6 +543,40 @@ class Turn {
           this.player.role.savedCard = null
         }
       }
+    }
+
+    return actions
+  }
+
+  /**
+   * Actions for operations role
+   * @return {Object}
+   */
+  getOperationsActions () {
+    const actions = {}
+
+    actions.operations = []
+
+    if (this.currentPosition.researchStation && this.player.cards.filter(card => card.type === 'city').length) {
+      this.game.cities.filter(city => !city.researchStation && city.name !== this.currentPosition.name).map(city => {
+        const discards = []
+
+        this.player.cards.filter(card => card.type === 'city').map(card => {
+          discards.push({
+            label: 'Discard ' + card.name + 'to move to ' + city.name,
+            do: () => {
+              this.actions--
+              this.game.move(this.player, city.name)
+              card.discard()
+            }
+          })
+        })
+
+        actions.operations.push({
+          label: 'Move to ' + city.name,
+          actions: discards
+        })
+      })
     }
 
     return actions
