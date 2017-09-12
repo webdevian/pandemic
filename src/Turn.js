@@ -130,16 +130,16 @@ class Turn {
    * @return {Array.Object}
    */
   getEvents () {
-    const options = []
+    const events = []
 
     this.player.cards.filter(card => card.type === 'event').map(card => {
-      options.push({
+      events.push({
         label: card.name,
         do: () => this.doEvent(card)
       })
     })
 
-    return options
+    return events
   }
 
   /**
@@ -165,10 +165,12 @@ class Turn {
   /**
    * Complete the action on an event card
    * @param {Card} card Event card
+   * @param {Object} payload Data to pass to event method
    * @param {Bolean} [discard=true] Should card be discarded?
    */
-  doEvent (card, discard = true) {
+  doEvent (card, payload, discard = true) {
     // TODO Set up actual events
+
     if (discard) {
       card.discard()
     }
@@ -176,6 +178,7 @@ class Turn {
 
   /**
    * Get options for the drive action based on adjacent cities
+   * @param {Player} [player] Player to move (defaults to current turn player)
    * @return {Array.Object}
    */
   getDriveOptions (player) {
@@ -196,7 +199,8 @@ class Turn {
 
   /**
    * Drive action
-   * @param  {String} city City to drive to
+   * @param {String} city City to drive to
+   * @param {Player} player Player to move
    */
   drive ({city, player}) {
     this.game.move(player, city)
@@ -204,6 +208,8 @@ class Turn {
 
   /**
    * Get options for flying direct
+   * @param {Player} [player] Player to move (defaults to current turn player)
+   * @param {Array} [cards] Cards to be played (defaults to current turn player's hand)
    * @return {Array.Object}
    */
   getDirectFlightOptions (player, cards) {
@@ -227,7 +233,8 @@ class Turn {
 
   /**
    * Fly to a specific city and discard the card
-   * @param  {Card} card
+   * @param {Card} card
+   * @param {Player} player Player to move
    */
   directFlight ({card, player}) {
     this.game.move(player, card.city.name)
@@ -236,6 +243,8 @@ class Turn {
 
   /**
    * Get options for chartering flight to anywhere
+   * @param {Player} [player] Player to move (defaults to current turn player)
+   * @param {Array} [cards] Cards to be played (defaults to current turn player's hand)
    * @return {Array.Object}
    */
   getCharterFlightOptions (player, cards) {
@@ -260,8 +269,9 @@ class Turn {
 
   /**
    * Fly to any city by discarding the card of the current city
-   * @param  {Card} card
-   * @param  {City} city
+   * @param {Card} card
+   * @param {City} city
+   * @param {Player} player Player to move
    */
   charterFlight ({card, city, player}) {
     this.game.move(player, city.name)
@@ -270,11 +280,11 @@ class Turn {
 
   /**
    * Options for travelling to another research station
+   * @param {Player} [player] Player to move (defaults to current turn player)
    * @return {Array.Object}
    */
-  getShuttleFlightOptions (player, cards) {
+  getShuttleFlightOptions (player) {
     player = player || this.player
-    cards = cards || this.player.cards
     const options = []
 
     if (this.game.cities.pick(player.position).researchStation) {
@@ -293,7 +303,8 @@ class Turn {
 
   /**
    * Move between research stations
-   * @param  {City} city
+   * @param {City} city
+   * @param {Player} player Player to move
    */
   shuttleFlight ({city, player}) {
     this.game.move(player, city.name)
@@ -542,7 +553,7 @@ class Turn {
       actions.savedCard = {
         label: 'Saved Card: ' + card.name,
         do: () => {
-          this.doEvent(card, false)
+          this.doEvent(card, {}, false)
           this.player.role.savedCard = null
         }
       }
