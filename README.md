@@ -21,4 +21,4 @@
 ## TODO
 
 - Events
-- Role abilities
+- Game GUI
