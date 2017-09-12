@@ -1,4 +1,7 @@
-# Pandemic board game simulation
+# Pandemic board game emulation
+
+Javascript implementation of the board game Pandemic
+
 ## Requirements
 
 - NodeJS
