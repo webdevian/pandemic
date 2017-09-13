@@ -30,29 +30,22 @@ class City {
    * Infect a city
    * @param  {Game}
    * @param  {Number} [amount=1]        How many infection cubes to add
-   * @param  {String} disease           Which disease? Defaults to city's color
+   * @param  {String} [disease]           Which disease? Defaults to city's color
    * @param  {Array.String} [outbreakSources]  City outbreak started in
    * @return {Object}                   Amount and disease, so game can deduct cubes from total
    */
   infect (game, amount = 1, disease, outbreakSources) {
+    disease = disease || this.color
+
     const quarantineSpecialist = game.players.filter(player => player.is('quarantine'))[0]
-
-    if (quarantineSpecialist) {
-      if (this.name === quarantineSpecialist.position || (this.adjacent && this.adjacent[quarantineSpecialist.position])) {
-        return false
-      }
-    }
-
-    if (!disease) {
-      disease = this.color
-    }
+    const isProtectedByQS = quarantineSpecialist && (this.name === quarantineSpecialist.position || (this.adjacent && this.adjacent[quarantineSpecialist.position]))
 
     const medic = game.players.filter(player => player.is('medic'))[0]
-    if (medic && game.diseases[disease].cured && this.name === medic.position) {
-      return false
-    }
+    const isProtectedByMedic = medic && game.diseases[disease].cured && this.name === medic.position
 
-    if (game.diseases[disease].eradicated) {
+    const isEradicated = game.diseases[disease].eradicated
+
+    if (isProtectedByQS || isProtectedByMedic || isEradicated) {
       return false
     }
 
@@ -61,7 +54,6 @@ class City {
       return this.outbreak(game, disease, outbreakSources)
     }
 
-    // Do outbreak here
     this.infection[disease] += amount
     game.diseases[disease].cubes -= amount
 
