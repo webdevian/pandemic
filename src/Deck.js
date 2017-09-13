@@ -38,11 +38,7 @@ class Deck {
    * Build the infection deck from the cities lib
    */
   infectionBuild () {
-    const cards = []
-
-    cities.map(city => {
-      cards.push(new Card('city', this, { name: city.name, city }))
-    })
+    const cards = this.buildCityCards()
 
     this.cards = cards
     this.discarded = []
@@ -61,11 +57,7 @@ class Deck {
    * Build the player deck from the cities and events libs
    */
   playerBuild () {
-    const cards = []
-
-    cities.map(city => {
-      cards.push(new Card('city', this, { name: city.name, city }))
-    })
+    const cards = this.buildCityCards()
 
     eventCards.map(event => {
       cards.push(new Card('event', this, event))
@@ -73,6 +65,20 @@ class Deck {
 
     this.cards = cards
     this.discarded = []
+  }
+
+  /**
+   * Create a card for each city
+   * @return {Array.Card} Array of city cards
+   */
+  buildCityCards () {
+    const cards = []
+
+    cities.map(city => {
+      cards.push(new Card('city', this, { name: city.name, city }))
+    })
+
+    return cards
   }
 
   /**

@@ -20,10 +20,21 @@ class Turn {
   /**
    * Is the player in the city of a given card
    * @param  {Card}  card
+   * @param  {Player} player
    * @return {Boolean}
    */
-  isInCity (card) {
-    return card.type === 'city' && card.name === this.currentPosition.name
+  isInCity (card, player) {
+    return card.type === 'city' && card.name === this.game.cities.pick(player.position).name
+  }
+
+  /**
+   * Is the player is not in the city of a given card
+   * @param  {Card}  card
+   * @param  {Player} player
+   * @return {Boolean}
+   */
+  isNotInCity (card, player) {
+    return card.type === 'city' && card.name !== this.game.cities.pick(player.position).name
   }
 
   /**
@@ -133,16 +144,17 @@ class Turn {
   getEvents (player) {
     const events = []
 
+    const optionsMethodName = key => 'get' + key.charAt(0).toUpperCase() + key.slice(1) + 'Options'
+
     if (this.player.role.savedCard) {
-      const card = this.player.role.savedCard
-      const options = this['get' + card.key.charAt(0).toUpperCase() + card.key.slice(1) + 'Options'](card)
+      const options = this[optionsMethodName(this.player.role.savedCard.key)](this.player.role.savedCard)
 
       options.label = 'Saved Card: ' + options.label
       events.push(options)
     }
 
     player.cards.filter(card => card.type === 'event').map(card => {
-      events.push(this['get' + card.key.charAt(0).toUpperCase() + card.key.slice(1) + 'Options'](card))
+      events.push(this[optionsMethodName(card.key)](card))
     })
 
     return events
@@ -226,7 +238,7 @@ class Turn {
     const options = []
 
     cards.map(card => {
-      if (this.game.cities.pick(player.position).name !== card.name && card.city) {
+      if (this.isNotInCity(card, player)) {
         options.push({
           label: 'Fly to ' + card.city.name,
           do: () => {
@@ -260,7 +272,7 @@ class Turn {
     cards = cards || this.player.cards
     const options = []
     cards.map(card => {
-      if (this.game.cities.pick(player.position).name === card.name && card.city) {
+      if (this.isInCity(card, player)) {
         this.game.cities.map(city => {
           options.push({
             label: 'Charter flight to ' + city.name,
@@ -325,7 +337,7 @@ class Turn {
   getBuildResearchStationOptions () {
     let options = []
     this.player.cards.map(card => {
-      if (this.isInCity(card) && !this.currentPosition.researchStation) {
+      if (this.isInCity(card, this.player) && !this.currentPosition.researchStation) {
         options.push({
           label: 'Build Research Station in ' + card.name,
           do: () => {
@@ -403,45 +415,23 @@ class Turn {
 
     this.game.players.map(player => {
       if (player.position === this.currentPosition.name && player !== this.player) {
-        if (this.player.cards.filter(card => card.name === this.currentPosition.name).length) {
+        this.player.cards.filter(card => (card.type === 'city' && this.player.is('researcher')) || card.name === this.currentPosition.name).map(card => {
           options.push({
-            label: 'Give ' + this.currentPosition.name + ' card to ' + player.name,
+            label: 'Give ' + card.name + ' card to ' + player.name,
             do: () => {
-              return this.doAction('shareKnowledge', {card: this.player.cards.filter(card => card.name === this.currentPosition.name)[0], to: player})
+              return this.doAction('shareKnowledge', {card, to: player})
             }
           })
-        }
+        })
 
-        if (this.player.is('researcher')) {
-          this.player.cards.filter(card => card.type === 'city').map(card => {
-            options.push({
-              label: 'Give ' + card.name + ' card to ' + player.name,
-              do: () => {
-                return this.doAction('shareKnowledge', {card, to: player})
-              }
-            })
-          })
-        }
-
-        if (player.cards.filter(card => card.name === this.currentPosition.name).length) {
+        player.cards.filter(card => (card.type === 'city' && player.is('researcher')) || card.name === this.currentPosition.name).map(card => {
           options.push({
-            label: 'Take ' + this.currentPosition.name + ' card from ' + player.name,
+            label: 'Take ' + card.name + ' card from ' + player.name,
             do: () => {
-              return this.doAction('shareKnowledge', {card: player.cards.filter(card => card.name === this.currentPosition.name)[0], to: this.player})
+              return this.doAction('shareKnowledge', {card, to: this.player})
             }
           })
-        }
-
-        if (player.is('researcher')) {
-          player.cards.filter(card => card.type === 'city').map(card => {
-            options.push({
-              label: 'Take ' + card.name + ' card from ' + player.name,
-              do: () => {
-                return this.doAction('shareKnowledge', {card, to: player})
-              }
-            })
-          })
-        }
+        })
       }
     })
 
