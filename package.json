@@ -8,12 +8,14 @@
   },
   "scripts": {
     "test": "nyc mocha --retries 3",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "watch": "mocha -w"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "chai": "^4.1.0",
+    "coveralls": "^2.13.1",
     "mocha": "^3.4.2",
     "nyc": "^11.1.0",
     "standard": "^10.0.2"
