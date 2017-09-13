@@ -24,17 +24,7 @@ class Turn {
    * @return {Boolean}
    */
   isInCity (card, player) {
-    return card.type === 'city' && card.name === this.game.cities.pick(player.position).name
-  }
-
-  /**
-   * Is the player is not in the city of a given card
-   * @param  {Card}  card
-   * @param  {Player} player
-   * @return {Boolean}
-   */
-  isNotInCity (card, player) {
-    return card.type === 'city' && card.name !== this.game.cities.pick(player.position).name
+    return card.name === player.position
   }
 
   /**
@@ -238,7 +228,7 @@ class Turn {
     const options = []
 
     cards.map(card => {
-      if (this.isNotInCity(card, player)) {
+      if (card.isCity() && !this.isInCity(card, player)) {
         options.push({
           label: 'Fly to ' + card.city.name,
           do: () => {
@@ -272,7 +262,7 @@ class Turn {
     cards = cards || this.player.cards
     const options = []
     cards.map(card => {
-      if (this.isInCity(card, player)) {
+      if (card.isCity() && this.isInCity(card, player)) {
         this.game.cities.map(city => {
           options.push({
             label: 'Charter flight to ' + city.name,
@@ -337,7 +327,7 @@ class Turn {
   getBuildResearchStationOptions () {
     let options = []
     this.player.cards.map(card => {
-      if (this.isInCity(card, this.player) && !this.currentPosition.researchStation) {
+      if (card.isCity() && this.isInCity(card, this.player) && !this.currentPosition.researchStation) {
         options.push({
           label: 'Build Research Station in ' + card.name,
           do: () => {

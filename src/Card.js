@@ -19,11 +19,22 @@ class Card {
     })
   }
 
+  /**
+   * Add card to discard pile and remove from hand (if in hand)
+   */
   discard () {
     this.deck.discard(this)
     if (this.hand) {
       this.hand.cards.splice(this.hand.cards.indexOf(this), 1)
     }
+  }
+
+  /**
+   * Is the card a city card
+   * @return {Boolean}
+   */
+  isCity () {
+    return this.type === 'city'
   }
 }
 
