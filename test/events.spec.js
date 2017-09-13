@@ -63,7 +63,7 @@ describe('One Quiet Night Event', () => {
 })
 
 describe('Forecast Event', () => {
-  it('TODO', () => {
+  it('Event card can be played', () => {
     const game = new Game(2)
     game.start()
     game.turn.player.role = {}

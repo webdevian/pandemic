@@ -175,7 +175,6 @@ class Turn {
    * @param {Bolean} [discard=true] Should card be discarded?
    */
   doEvent (card, payload, discard = true) {
-    // TODO Set up actual events
     this[card.key + 'Event'](payload)
 
     if (card.isSaved) {
@@ -648,7 +647,6 @@ class Turn {
    */
   getResilientOptions (eventCard) {
     const actions = []
-    // TODO Allow during epidemic
     this.game.decks.infection.discarded.map(card => {
       actions.push({
         label: 'Resilient Population',
