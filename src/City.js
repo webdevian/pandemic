@@ -37,15 +37,7 @@ class City {
   infect (game, amount = 1, disease, outbreakSources) {
     disease = disease || this.color
 
-    const quarantineSpecialist = game.players.filter(player => player.is('quarantine'))[0]
-    const isProtectedByQS = quarantineSpecialist && (this.name === quarantineSpecialist.position || (this.adjacent && this.adjacent[quarantineSpecialist.position]))
-
-    const medic = game.players.filter(player => player.is('medic'))[0]
-    const isProtectedByMedic = medic && game.diseases[disease].cured && this.name === medic.position
-
-    const isEradicated = game.diseases[disease].eradicated
-
-    if (isProtectedByQS || isProtectedByMedic || isEradicated) {
+    if (this.isProtected(game, disease)) {
       return false
     }
 
@@ -60,6 +52,24 @@ class City {
     if (game.diseases[disease].cubes < 1) {
       throw new Error('Game Over')
     }
+  }
+
+  /**
+   * Is the city protected from infection
+   * @param  {Game}  game
+   * @param  {String} disease Which disease?
+   * @return {Boolean}
+   */
+  isProtected (game, disease) {
+    const quarantineSpecialist = game.players.filter(player => player.is('quarantine'))[0]
+    const isProtectedByQS = quarantineSpecialist && (this.name === quarantineSpecialist.position || (this.adjacent && this.adjacent[quarantineSpecialist.position]))
+
+    const medic = game.players.filter(player => player.is('medic'))[0]
+    const isProtectedByMedic = medic && game.diseases[disease].cured && this.name === medic.position
+
+    const isEradicated = game.diseases[disease].eradicated
+
+    return !!(isProtectedByQS || isProtectedByMedic || isEradicated)
   }
 
   /**
