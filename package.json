@@ -8,18 +8,19 @@
   },
   "scripts": {
     "test": "nyc mocha --retries 3",
-    "coverage": "nyc report --reporter=text-lcov | coveralls && nyc report --reporter=text-lcov | codeclimate-test-reporter",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "watch": "mocha -w"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "apc-test": "^1.0.0"
+    "apc-test": "1.1.0"
   },
   "nyc": {
     "reporter": [
       "html",
-      "text-summary"
+      "text-summary",
+      "lcov"
     ]
   },
   "standard": {
